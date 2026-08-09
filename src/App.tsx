@@ -66,7 +66,11 @@ const localizer = dateFnsLocalizer({
   - [x] 'BUG: Uncaught RangeError: invalid duration: 1' when changing the value of bufferAfter
   - [ ] BUG: I also just realized the buffer feature won't work for events
   - [ ] NOTE: we might not need to use a lot of useState that stores calItem objects since 
-    - we use useLiveQuery; https://dexie.org/docs/dexie-react-hooks/useLiveQuery%28%29
+    - we use useLiveQuery; https://dexie.org/docs/dexie-react-hooks/useLiveQuery()
+  - [ ] BUG: on creating tasks, buffers are not being saved, I think it's on all the inputs?
+  - [x] BUG huhu: it seems that future busyEvents are being referenced in the current date
+   - Must have something to do in ScheduleTasks, maybe I need to filter the busyEvents per ScheduleTasksInSlotCall
+   Ex: today is 08, 6:00, if theres a busy event in 09 6:00-6:30, that time won't be abailable to 08 
 */
 
 function App() {
@@ -132,6 +136,7 @@ function App() {
         defaultView={Views.WEEK}
         timeslots={3}
         step={5}
+        min={new Date(Temporal.Now.plainDateTimeISO().with({hour: 5, minute: 0}).toString())}
         localizer={localizer}
         startAccessor={(event: EventDbModel) => new Date(event.start)}
         endAccessor={(event: EventDbModel) => new Date(event.end)}

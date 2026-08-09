@@ -40,7 +40,7 @@ export const agenda = (
         sortedTasks: scheduled ?? [],
         queue: allTasks,
       };
-    
+
     const tasksInDate = allTasks.filter((task) => {
       return (
         Temporal.PlainDateTime.compare(task.startDate ?? {}, date) === -1 ||
@@ -50,12 +50,12 @@ export const agenda = (
 
     const scheduleTasksInDate = scheduleTasks(
       tasksInDate,
-      busyEvents,
+      busyEvents.filter((e) => e.start && date.equals(e.start?.toPlainDate())),
       timeSlots,
       date,
     );
 
-    console.log("Finished scheduling tasks per slot in ", date.toString())
+    console.log("Finished scheduling tasks per slot in ", date.toString());
     const flatten = scheduleTasksInDate.reduce<CalendarTask[]>(
       (acc, curr) => [...acc, ...curr.sortedTasks],
       [],
