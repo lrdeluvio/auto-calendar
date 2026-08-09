@@ -32,7 +32,7 @@ const localizer = dateFnsLocalizer({
   - [x] pop up modal that shows unsorted tasks
   - [x] buttons for calendar navigation
   - [x] make tasks actually completable
-    - [ ] BUG: events also have the checkboxes for completables
+    - [x] BUG: events also have the checkboxes for completables
   - [ ] custom event colors
   - [x] implement the buffer feature
   - [x] make calendar items clickable, allowing for editing
@@ -43,7 +43,6 @@ const localizer = dateFnsLocalizer({
         depending on the radio state
     - [x] on event, create a checkbox for auto sorting a task or manually
       setting start and end
-  - [ ] BUG: events also have complete tasks buttons in their component
   - [x] when completing a task early, they should be moved to the curren time
     - (with end being the current time)
   - [ ] make calendar item duplicatable
@@ -64,13 +63,14 @@ const localizer = dateFnsLocalizer({
     - Example: today is 07, 22:00 and I want to schedule something for tomorrow morning, but It
       won't be scheduled since it's past 6:00.
   - [x] 'BUG: Uncaught RangeError: invalid duration: 1' when changing the value of bufferAfter
-  - [ ] BUG: I also just realized the buffer feature won't work for events
+  - [x] BUG: I also just realized the buffer feature won't work for events
   - [ ] NOTE: we might not need to use a lot of useState that stores calItem objects since 
     - we use useLiveQuery; https://dexie.org/docs/dexie-react-hooks/useLiveQuery()
   - [ ] BUG: on creating tasks, buffers are not being saved, I think it's on all the inputs?
   - [x] BUG huhu: it seems that future busyEvents are being referenced in the current date
    - Must have something to do in ScheduleTasks, maybe I need to filter the busyEvents per ScheduleTasksInSlotCall
    Ex: today is 08, 6:00, if theres a busy event in 09 6:00-6:30, that time won't be abailable to 08 
+  - [ ] refactor names for consistency!!
 */
 
 function App() {

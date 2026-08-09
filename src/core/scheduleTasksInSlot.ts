@@ -67,8 +67,8 @@ export const scheduleTasksInSlot = (
       (e) =>
         e.start &&
         e.end &&
-        Temporal.PlainTime.compare(e.end, taskStartTime) === 1 &&
-        Temporal.PlainTime.compare(taskEndTime, e.start) === 1,
+        Temporal.PlainTime.compare(e.end.add(e.bufferAfter), taskStartTime) === 1 &&
+        Temporal.PlainTime.compare(taskEndTime, e.start.add(e.bufferBefore) ) === 1,
     );
 
     overlappingEvent &&
@@ -81,7 +81,7 @@ export const scheduleTasksInSlot = (
     if (overlappingEvent && overlappingEvent.end)
       return schedule(
         tasksToProcess,
-        Temporal.PlainTime.from(overlappingEvent.end),
+        Temporal.PlainTime.from(overlappingEvent.end.add(overlappingEvent.bufferAfter)),
         sortedTasks,
         overDueTasks,
       );
