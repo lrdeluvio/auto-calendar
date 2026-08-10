@@ -17,6 +17,10 @@ import { CalItemForm } from "./components/form/CalItemForm";
 import { updateTaskFromForm } from "./components/form/taskFromForm";
 import { CustomEvent } from "./components/common/CustomEvent";
 import { DeleteCalItemButton } from "./components/DeleteCalItem";
+import {
+  CalItemDialog,
+  useCalItemDialog,
+} from "./components/form/CalItemDialog";
 
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
@@ -71,18 +75,19 @@ const localizer = dateFnsLocalizer({
    - Must have something to do in ScheduleTasks, maybe I need to filter the busyEvents per ScheduleTasksInSlotCall
    Ex: today is 08, 6:00, if theres a busy event in 09 6:00-6:30, that time won't be abailable to 08 
   - [ ] refactor names for consistency!!
+  - [ ] add a isBusy toggle on events
 */
 
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [eventData, setEventData] = useState<EventDbModel | null>(null);
-  const calItemModalRef = useRef<HTMLDialogElement>(null);
+  const { calItem, closeDialog } = useCalItemDialog();
   const { startOfWeek, endOfWeek } = getWeekBounds(
     Temporal.PlainDate.from({
       year: currentDate.getFullYear(),
       month: currentDate.getMonth() + 1,
       day: currentDate.getDate(),
-    }), 2
+    }),
+    2,
   );
 
   const events = useLiveQuery(() =>
@@ -106,30 +111,30 @@ function App() {
       <ViewUnsortedTasksButton></ViewUnsortedTasksButton>
       <SortTasksButton />
 
-      <dialog id={eventData?.id} ref={calItemModalRef}>
-        {eventData && (
+      <CalItemDialog>
+        {calItem && (
           <CalItemForm
             mode="edit"
-            data={eventData}
+            data={calItem}
             updateFormAction={(formData, calItem) =>
               updateTaskFromForm(formData, calItem.id)
             }
           >
             <CalItemFormFields
-              data={eventData}
+              data={calItem}
               isViewOnly={false}
-              itemType={eventData.type}
+              itemType={calItem.type}
             />
             <DeleteCalItemButton
-              calItemId={eventData.id}
+              calItemId={calItem.id}
               onOk={() => {
-                calItemModalRef.current?.close();
+                closeDialog();
                 alert("Deleted item");
               }}
             />
           </CalItemForm>
         )}
-      </dialog>
+      </CalItemDialog>
 
       <Calendar
         events={events ? events : undefined}
@@ -144,11 +149,10 @@ function App() {
         onNavigate={handleNavigate}
         components={{
           week: {
-            event: (e) => <CustomEvent event={e.event} ref={calItemModalRef} />,
+            event: (e) => <CustomEvent event={e.event} />,
           },
         }}
         formats={{ eventTimeRangeFormat: () => "" }}
-        onSelectEvent={(f) => setEventData(f)}
       />
     </>
   );
