@@ -34,11 +34,7 @@ interface CalItemFormFieldsProps {
   data?: EventDbModel;
   isViewOnly: boolean;
 }
-// should work on delete button
-// should probably pass the mode to here
-// so that delete would only appear in view and edit mode, not create
-// or maybe i should create a delete event prop and pass it as a child of CalItemForm as well?
-// yep i should do that!!!, also that for the duplicate button!!!
+
 export const CalItemFormFields = ({
   itemType,
   data,
@@ -50,35 +46,12 @@ export const CalItemFormFields = ({
   const dateNow = Temporal.Now.plainDateTimeISO().toString();
   const common = { required: true, disabled: isViewOnly };
 
-  const [name, setName] = useState<string | undefined>();
-  const [duration, setDuration] = useState<number | undefined>();
-  const [weight, setWeight] = useState<string | undefined>();
-  const [slotId, setSlotId] = useState<string | undefined>();
   const [autoSortForm, setAutoSortForm] = useState<boolean>(false);
-  const [startDate, setStartDate] = useState<string | undefined>(dateNow);
-  const [dueDate, setDueDate] = useState<string | undefined>(dateNow);
-  const [start, setStart] = useState<string | undefined>(dateNow);
-  const [end, setEnd] = useState<string | undefined>(dateNow);
-  const [bufferBefore, setBufferBefore] = useState<string>("0");
-  const [bufferAfter, setBufferAfter] = useState<string>("0");
 
   useEffect(() => {
-    console.log(data);
-    if (!data) return;
-    setName(data.name);
-    setWeight(String(data.weight));
-    setStart(data.start);
-    setEnd(data.end);
-    setBufferBefore(String(Temporal.Duration.from(data.bufferBefore).minutes));
-    setBufferAfter(String(Temporal.Duration.from(data.bufferAfter).minutes));
-
-    if (isEvent) return;
-    setDuration(Temporal.Duration.from(data.duration).minutes);
-    setSlotId(data.slotId);
+    if (!data || isEvent) return;
     setAutoSortForm(data.isSortable);
-    setStartDate(data.startDate);
-    setDueDate(data.dueDate);
-  }, [data]);
+  }, [data?.isSortable]); 
 
   return (
     <>
@@ -86,8 +59,7 @@ export const CalItemFormFields = ({
         label="Name"
         type="text"
         name="name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        defaultValue={data?.name}
         {...common}
       />
       {isTask && (
@@ -106,16 +78,14 @@ export const CalItemFormFields = ({
             label="Start"
             type="datetime-local"
             name="start"
-            value={start}
-            onChange={(e) => setStart(e.target.value)}
+            defaultValue={data?.start}
             {...common}
           />
           <FormInput
             label="End"
             type="datetime-local"
             name="end"
-            value={end}
-            onChange={(e) => setEnd(e.target.value)}
+            defaultValue={data?.end}
             {...common}
           />
         </>
@@ -123,13 +93,7 @@ export const CalItemFormFields = ({
         <FormSelect
           label="Duration"
           name="duration"
-          value={duration}
-          onChange={(e) =>
-            setDuration(
-              Temporal.Duration.from({ minutes: Number(e.target.value) })
-                .minutes,
-            )
-          }
+          defaultValue={25}
           options={durationOptions}
           {...common}
         />
@@ -144,11 +108,9 @@ export const CalItemFormFields = ({
                   label={w.text}
                   type="radio"
                   name="weight"
-                  value={w.weight}
                   defaultChecked={
-                    weight === String(w.weight) || w.text === "Normal"
+                    data?.weight === w.weight || w.text === "Normal"
                   }
-                  onChange={(e) => setWeight(e.target.value)}
                   {...common}
                 />
               );
@@ -160,8 +122,7 @@ export const CalItemFormFields = ({
               <FormSelect
                 label="Timeslots"
                 name="slotId"
-                value={slotId}
-                onChange={(e) => setSlotId(e.target.value)}
+                defaultValue={data?.slotId}
                 options={
                   (slots?.ok &&
                     slots.data.map((s) => ({ label: s.name, value: s.id }))) ||
@@ -174,23 +135,21 @@ export const CalItemFormFields = ({
                 label="Can be started on"
                 type="date"
                 name="startDate"
-                value={startDate?.slice(0, 10)}
-                onChange={(e) => setStartDate(e.target.value)}
+                defaultValue={data?.startDate?.slice(0, 10)}
                 {...common}
               />
               <FormInput
                 label="Due by"
                 type="date"
                 name="dueDate"
-                value={dueDate?.slice(0, 10)}
-                onChange={(e) => setDueDate(e.target.value)}
+                defaultValue={data?.dueDate?.slice(0, 10)}
                 {...common}
               />
             </>
           )}
         </>
       )}
-      // buffer after are set to 15 minutes by default for me
+      
       <div style={{ display: "flex", flexDirection: "row" }}>
         <FormInput
           label={"Buffer Before"}
@@ -198,8 +157,7 @@ export const CalItemFormFields = ({
           min="0"
           max="1440"
           name="bufferBefore"
-          value={bufferBefore}
-          onChange={(e) => setBufferBefore(e.target.value)}
+          defaultValue={data?.bufferBefore}
           {...common}
         />
         <FormInput
@@ -208,8 +166,7 @@ export const CalItemFormFields = ({
           min="0"
           max="1440"
           name="bufferAfter"
-          value={bufferAfter}
-          onChange={(e) => setBufferAfter(e.target.value)}
+          defaultValue={data?.bufferAfter}
           {...common}
         />
       </div>

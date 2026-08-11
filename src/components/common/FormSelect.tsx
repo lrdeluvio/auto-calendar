@@ -3,7 +3,6 @@ import { useId } from "react";
 type FormSelectProps = {
   label: string;
   name: string;
-  value: string | number | undefined;
   id?: string;
   options: {
     id?: string;
@@ -12,11 +11,9 @@ type FormSelectProps = {
   }[];
 } & React.InputHTMLAttributes<HTMLSelectElement>;
 
-
 export const FormSelect = ({
   label,
   name,
-  value,
   options,
   id = useId(),
   ...selectProps
@@ -24,7 +21,7 @@ export const FormSelect = ({
   return (
     <>
       <label htmlFor={id}>{label}</label>
-      <select name={name} id={id} value={value} {...selectProps}>
+      <select name={name} id={id} {...selectProps}>
         {options.map((opt) => (
           <option value={opt.value} key={opt.id ?? opt.value}>
             {opt.label}
