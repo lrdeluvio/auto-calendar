@@ -1,25 +1,21 @@
 import { Temporal } from "@js-temporal/polyfill";
 import type { TasksSchedule } from "../types/common";
 import type {
-  CalendarItem,
+  CalendarEntry,
   CalendarTaskUnscheduled,
-} from "../types/models/calendarItem";
-import type { TimeSlot } from "../types/models/timeslot";
+} from "../types/models/CalendarEntry";
+import type { TimeSlot } from "../types/models/TimeSlot";
 import { resolveSlotTaskConflicts } from "./resolveSlotTaskConflicts";
 import { scheduleTasksInSlot } from "./scheduleTasksInSlot";
-//per day palang ito
-// Though while this is per day, it can also be considered as
-// scheduling multiple slots within a day. So instead of
-// recalculating the whole day, we have the option to only
-// calculate a later part of the day.
-export const scheduleTasks = (
+
+export const scheduleTasksInDate = (
   queuedTasks: CalendarTaskUnscheduled[],
-  busyEvents: CalendarItem[],
+  busyEntries: CalendarEntry[],
   timeSlots: TimeSlot[],
   date: Temporal.PlainDate,
 ): TasksSchedule[] => {
-  const scheduleTasksRecursion = (
-    busyEvents: CalendarItem[],
+  const scheduleTasksInDateRecursion = (
+    busyEntries: CalendarEntry[],
     timeSlots: TimeSlot[],
     sortedTasks: TasksSchedule[] = [],
   ) => {
@@ -46,20 +42,20 @@ export const scheduleTasks = (
           currentSlot,
           nextSlot,
           queuedTasks,
-          busyEvents,
+          busyEntries,
           date,
         )
       : scheduleTasksInSlot(
           tasks,
-          busyEvents,
+          busyEntries,
           currentSlot.start,
           currentSlot.end,
           date,
         );
 
     console.log("Items in slot scheduled. Scheduling next slot.");
-    return scheduleTasksRecursion(
-      [...busyEvents, ...sorted.sortedTasks],
+    return scheduleTasksInDateRecursion(
+      [...busyEntries, ...sorted.sortedTasks],
       [...(nextSlot ? [nextSlot] : []), ...slots],
       [
         ...sortedTasks,
@@ -69,5 +65,5 @@ export const scheduleTasks = (
   };
 
   console.log("Scheduling items in", date.toString(), "per slot");
-  return scheduleTasksRecursion(busyEvents, timeSlots, []);
+  return scheduleTasksInDateRecursion(busyEntries, timeSlots, []);
 };

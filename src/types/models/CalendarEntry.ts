@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import type { Weight } from "../common";
 
-interface BaseItem {
+interface BaseEntry {
   id: string;
   name: string;
   notes: string;
@@ -22,24 +22,24 @@ interface BaseItem {
   dueDate: Temporal.PlainDateTime;
 }
 
-export type CalendarItemType = "event" | "task"
+export type CalendarEntryType = "event" | "task"
 
-export interface CalendarEvent extends BaseItem {
+export interface CalendarEvent extends BaseEntry {
   type: "event";
   start: Temporal.PlainDateTime;
   end: Temporal.PlainDateTime;
 }
 
-export interface CalendarTask extends BaseItem {
+export interface CalendarTask extends BaseEntry {
   type: "task";
   start: Temporal.PlainDateTime;
   end: Temporal.PlainDateTime;
 }
 
-export interface CalendarTaskUnscheduled extends BaseItem {
+export interface CalendarTaskUnscheduled extends BaseEntry {
   type: "task";
   start: null;
   end: null;
 }
 
-export type CalendarItem = CalendarEvent | CalendarTask | CalendarTaskUnscheduled;
+export type CalendarEntry = CalendarEvent | CalendarTask | CalendarTaskUnscheduled;

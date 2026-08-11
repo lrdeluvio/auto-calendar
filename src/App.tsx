@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { parse, format, startOfWeek, getDay } from "date-fns";
@@ -8,19 +8,19 @@ import { CreateTimeslotButton } from "./components/CreateTimeslots";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "./db/db";
 import { getWeekBounds } from "./utils/getWeekBounds";
-import type { EventDbModel } from "./db/types";
+import type { EntryDbModel } from "./db/types";
 import { ViewUnsortedTasksButton } from "./components/ViewUnsortedTasks";
-import { CreateCalendarItemButton } from "./components/CreateCalendarItem";
+import { CreateEntryButton } from "./components/CreateCalendarItem";
 import { SortTasksButton } from "./components/SortTasksButton";
-import { CalItemFormFields } from "./components/form/CalItemFormFields";
-import { CalItemForm } from "./components/form/CalItemForm";
+import { EntryFormFields } from "./components/form/EntryFormFields";
+import { EntryForm } from "./components/form/EntryForm";
 import { updateTaskFromForm } from "./components/form/taskFromForm";
 import { CustomEvent } from "./components/common/CustomEvent";
-import { DeleteCalItemButton } from "./components/DeleteCalItem";
+import { DeleteEntryButton } from "./components/DeleteEntryButton";
 import {
-  CalItemDialog,
-  useCalItemDialog,
-} from "./components/form/CalItemDialog";
+  EntryDialog,
+  useEntryDialog,
+} from "./components/form/EntryDialog";
 
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
@@ -68,19 +68,22 @@ const localizer = dateFnsLocalizer({
       won't be scheduled since it's past 6:00.
   - [x] 'BUG: Uncaught RangeError: invalid duration: 1' when changing the value of bufferAfter
   - [x] BUG: I also just realized the buffer feature won't work for events
-  - [ ] NOTE: we might not need to use a lot of useState that stores calItem objects since 
+  - [ ] NOTE: we might not need to use a lot of useState that stores entry objects since 
     - we use useLiveQuery; https://dexie.org/docs/dexie-react-hooks/useLiveQuery()
   - [ ] BUG: on creating tasks, buffers are not being saved, I think it's on all the inputs?
   - [x] BUG huhu: it seems that future busyEvents are being referenced in the current date
-   - Must have something to do in ScheduleTasks, maybe I need to filter the busyEvents per ScheduleTasksInSlotCall
+   - Must have something to do in scheduleTasksInDate, maybe I need to filter the busyEvents per scheduleTasksInDateInSlotCall
    Ex: today is 08, 6:00, if theres a busy event in 09 6:00-6:30, that time won't be abailable to 08 
   - [ ] refactor names for consistency!!
   - [ ] add a isBusy toggle on events
+  - [ ] add default value on the form
+  - [ ] entry -> entry
+  - [ ] branded types for readability: https://gemini.google.com/app/d445b8e5d85bc859
 */
 
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { calItem, closeDialog } = useCalItemDialog();
+  const { entry, closeDialog } = useEntryDialog();
   const { startOfWeek, endOfWeek } = getWeekBounds(
     Temporal.PlainDate.from({
       year: currentDate.getFullYear(),
@@ -106,35 +109,35 @@ function App() {
 
   return (
     <>
-      <CreateCalendarItemButton defaultItemType={"event"} />
+      <CreateEntryButton defaultItemType={"event"} />
       <CreateTimeslotButton></CreateTimeslotButton>
       <ViewUnsortedTasksButton></ViewUnsortedTasksButton>
       <SortTasksButton />
 
-      <CalItemDialog>
-        {calItem && (
-          <CalItemForm
+      <EntryDialog>
+        {entry && (
+          <EntryForm
             mode="edit"
-            data={calItem}
-            updateFormAction={(formData, calItem) =>
-              updateTaskFromForm(formData, calItem.id)
+            data={entry}
+            updateFormAction={(formData, entry) =>
+              updateTaskFromForm(formData, entry.id)
             }
           >
-            <CalItemFormFields
-              data={calItem}
+            <EntryFormFields
+              data={entry}
               isViewOnly={false}
-              itemType={calItem.type}
+              itemType={entry.type}
             />
-            <DeleteCalItemButton
-              calItemId={calItem.id}
+            <DeleteEntryButton
+              entryId={entry.id}
               onOk={() => {
                 closeDialog();
                 alert("Deleted item");
               }}
             />
-          </CalItemForm>
+          </EntryForm>
         )}
-      </CalItemDialog>
+      </EntryDialog>
 
       <Calendar
         events={events ? events : undefined}
@@ -143,8 +146,8 @@ function App() {
         step={5}
         min={new Date(Temporal.Now.plainDateTimeISO().with({hour: 5, minute: 0}).toString())}
         localizer={localizer}
-        startAccessor={(event: EventDbModel) => new Date(event.start)}
-        endAccessor={(event: EventDbModel) => new Date(event.end)}
+        startAccessor={(event: EntryDbModel) => new Date(event.start)}
+        endAccessor={(event: EntryDbModel) => new Date(event.end)}
         date={currentDate}
         onNavigate={handleNavigate}
         components={{

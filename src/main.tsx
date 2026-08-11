@@ -1,12 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import { CalItemDialogProvider } from "./components/form/CalItemDialog.tsx";
+import { EntryDialogProvider } from "./components/form/EntryDialog.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <CalItemDialogProvider>
+    <EntryDialogProvider>
       <App />
-    </CalItemDialogProvider>
+    </EntryDialogProvider>
   </StrictMode>,
 );

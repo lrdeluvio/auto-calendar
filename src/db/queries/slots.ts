@@ -1,5 +1,5 @@
 import type { Result, SlotError } from "../../types/common";
-import type { TimeSlot } from "../../types/models/timeslot";
+import type { TimeSlot } from "../../types/models/TimeSlot";
 import { db } from "../db";
 import { toTimeSlotDbModel } from "../modelMappers";
 import type { TimeSlotDbModel } from "../types";

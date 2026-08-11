@@ -1,11 +1,11 @@
 import { Temporal } from "@js-temporal/polyfill";
 import type {
   CalendarEvent,
-  CalendarItem,
+  CalendarEntry,
   CalendarTask,
-} from "../types/models/calendarItem";
-import type { TimeSlot } from "../types/models/timeslot";
-import type { TimeSlotDbModel, EventDbModel } from "./types";
+} from "../types/models/CalendarEntry";
+import type { TimeSlot } from "../types/models/TimeSlot";
+import type { TimeSlotDbModel, EntryDbModel } from "./types";
 import type { Result } from "../types/common";
 
 export const toTimeSlotDbModel = (slot: TimeSlot): TimeSlotDbModel => ({
@@ -20,7 +20,7 @@ export const fromTimeSlotDbModel = (slot: TimeSlotDbModel): TimeSlot => ({
   end: Temporal.PlainTime.from(slot.end),
 });
 
-export const toEventDbModel = (event: CalendarItem): EventDbModel => ({
+export const toEntryDbModel = (event: CalendarEntry): EntryDbModel => ({
   ...event,
   start: event.start?.toString() ?? "",
   end: event.end?.toString() ?? "",
@@ -31,11 +31,11 @@ export const toEventDbModel = (event: CalendarItem): EventDbModel => ({
   dueDate: event.dueDate?.toString() ?? "",
 });
 
-type FromEventDbModelError = "MISSING_INTERVAL" | "INVALID_INTERVAL_PAIRS";
+type FromEntryDbModelError = "MISSING_INTERVAL" | "INVALID_INTERVAL_PAIRS";
 
-export const fromEventDbModel = (
-  event: EventDbModel,
-): Result<CalendarItem, FromEventDbModelError> => {
+export const fromEntryDbModel = (
+  event: EntryDbModel,
+): Result<CalendarEntry, FromEntryDbModelError> => {
   const base = {
     id: event.id,
     name: event.name,
@@ -84,13 +84,13 @@ export const fromEventDbModel = (
   };
 };
 
-export const bulkFromEventDbModel = (
-  event: EventDbModel[],
-): Result<CalendarItem[], FromEventDbModelError> => {
-  const result: CalendarItem[] = [];
+export const bulkFromEntryDbModel = (
+  event: EntryDbModel[],
+): Result<CalendarEntry[], FromEntryDbModelError> => {
+  const result: CalendarEntry[] = [];
 
   for (const item of event) {
-    const x = fromEventDbModel(item);
+    const x = fromEntryDbModel(item);
     if (!x.ok) return { ok: false, error: x.error };
     result.push(x.data);
   }

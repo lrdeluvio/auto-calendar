@@ -7,7 +7,7 @@ export interface TimeSlotDbModel {
   end: string;
 }
 
-export interface EventDbModel {
+export interface EntryDbModel {
   type: "event" | "task";
   id: string;
   name: string;

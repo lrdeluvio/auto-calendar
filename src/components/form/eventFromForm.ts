@@ -1,6 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { addEvent } from "../../db/queries/events";
-import type { CalendarEvent } from "../../types/models/calendarItem";
+import { addEntry } from "../../db/queries/entries";
+import type { CalendarEvent } from "../../types/models/CalendarEntry";
 import { sortTasks } from "../../utils/sortTasks";
 
 export const createEventFromForm = async (data: FormData) => {
@@ -25,9 +25,9 @@ export const createEventFromForm = async (data: FormData) => {
     startDate: start,
     dueDate: end,
   };
-  const eventResponse = await addEvent(event);
-  if (!eventResponse.ok) {
-    alert(eventResponse.error);
+  const entryResponse = await addEntry(event);
+  if (!entryResponse.ok) {
+    alert(entryResponse.error);
     return;
   }
 

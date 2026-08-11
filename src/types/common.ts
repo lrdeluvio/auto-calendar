@@ -1,4 +1,4 @@
-import type { CalendarTask, CalendarTaskUnscheduled } from "./models/calendarItem";
+import type { CalendarTask, CalendarTaskUnscheduled } from "./models/CalendarEntry";
 
 export type Result<T, E = string> =
   | { ok: true; data: T }

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { type CalendarItemType } from "../../types/models/calendarItem";
+import { type CalendarEntryType } from "../../types/models/CalendarEntry";
 import { Temporal } from "@js-temporal/polyfill";
 import { useLiveQuery } from "dexie-react-hooks";
 import { getAllTimeSlots } from "../../db/queries/slots";
-import type { EventDbModel } from "../../db/types";
+import type { EntryDbModel } from "../../db/types";
 import { FormInput } from "../common/FormInput";
 import { FormSelect } from "../common/FormSelect";
 
@@ -29,17 +29,17 @@ const weightOptions = [
   { text: "Do ASAP", weight: 3 },
 ];
 
-interface CalItemFormFieldsProps {
-  itemType: CalendarItemType;
-  data?: EventDbModel;
+interface EntryFormFieldsProps {
+  itemType: CalendarEntryType;
+  data?: EntryDbModel;
   isViewOnly: boolean;
 }
 
-export const CalItemFormFields = ({
+export const EntryFormFields = ({
   itemType,
   data,
   isViewOnly,
-}: CalItemFormFieldsProps) => {
+}: EntryFormFieldsProps) => {
   const isEvent = itemType === "event";
   const isTask = itemType === "task";
   const slots = useLiveQuery(getAllTimeSlots);

@@ -1,12 +1,12 @@
 import { Temporal } from "@js-temporal/polyfill";
 import type { TasksSchedule } from "../types/common";
 import type {
-  CalendarItem,
+  CalendarEntry,
   CalendarTask,
   CalendarTaskUnscheduled,
-} from "../types/models/calendarItem";
-import type { TimeSlot } from "../types/models/timeslot";
-import { scheduleTasks } from "./scheduleTasks";
+} from "../types/models/CalendarEntry";
+import type { TimeSlot } from "../types/models/TimeSlot";
+import { scheduleTasksInDate } from "./scheduleTasksInDate";
 
 export const eachDayOfInterval = (
   start: Temporal.PlainDate,
@@ -25,10 +25,10 @@ export const agenda = (
   start: Temporal.PlainDate,
   end: Temporal.PlainDate,
   allTasks: CalendarTaskUnscheduled[],
-  busyEvents: CalendarItem[],
+  busyEntries: CalendarEntry[],
   timeSlots: TimeSlot[],
 ): TasksSchedule => {
-  const scheduleTasksInAgenda = (
+  const scheduleTasksInDateInAgenda = (
     dates: Temporal.PlainDate[],
     allTasks: CalendarTaskUnscheduled[],
     timeSlots: TimeSlot[],
@@ -48,15 +48,15 @@ export const agenda = (
       );
     });
 
-    const scheduleTasksInDate = scheduleTasks(
+    const scheduleTasksInDateInDate = scheduleTasksInDate(
       tasksInDate,
-      busyEvents.filter((e) => e.start && date.equals(e.start?.toPlainDate())),
+      busyEntries.filter((e) => e.start && date.equals(e.start?.toPlainDate())),
       timeSlots,
       date,
     );
 
     console.log("Finished scheduling tasks per slot in ", date.toString());
-    const flatten = scheduleTasksInDate.reduce<CalendarTask[]>(
+    const flatten = scheduleTasksInDateInDate.reduce<CalendarTask[]>(
       (acc, curr) => [...acc, ...curr.sortedTasks],
       [],
     );
@@ -65,12 +65,12 @@ export const agenda = (
       (task) => !flatten.some((task2) => task.id === task2.id),
     );
 
-    return scheduleTasksInAgenda(rest, queue, timeSlots, [
+    return scheduleTasksInDateInAgenda(rest, queue, timeSlots, [
       ...scheduled,
       ...flatten,
     ]);
   };
-  return scheduleTasksInAgenda(
+  return scheduleTasksInDateInAgenda(
     eachDayOfInterval(start, end),
     allTasks,
     timeSlots,

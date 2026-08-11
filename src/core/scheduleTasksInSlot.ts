@@ -1,20 +1,19 @@
 import { Temporal } from "@js-temporal/polyfill";
 import type { TasksSchedule } from "../types/common";
 import type {
-  CalendarItem,
+  CalendarEntry,
   CalendarTask,
   CalendarTaskUnscheduled,
-} from "../types/models/calendarItem";
+} from "../types/models/CalendarEntry";
 
 export const scheduleTasksInSlot = (
   queuedTasks: CalendarTaskUnscheduled[],
-  activeEvents: CalendarItem[],
+  busyEntries: CalendarEntry[],
   slotStartTime: Temporal.PlainTime,
   slotEndTime: Temporal.PlainTime,
   date: Temporal.PlainDate,
 ) => {
-  const busyEvents = activeEvents.filter((e) => e.isBusy);
-  const sortTasks = queuedTasks.toSorted((a, b) => b.weight - a.weight);
+  const sortedTasksByWeight = queuedTasks.toSorted((a, b) => b.weight - a.weight);
   const startingTime =
     Temporal.PlainTime.compare(Temporal.Now.plainTimeISO(), slotStartTime) >=
       0 && date.equals(Temporal.Now.plainDateISO())
@@ -23,11 +22,6 @@ export const scheduleTasksInSlot = (
   // - [ ] should add creationDate property on CalenderBase. So when sorting
   // those with older creationDate will have higher priority
 
-  /*
-    I think is where I need to fix. the dueDate bug, I'll probably need to add
-    a new parameter that holds the unsorted tasks now. Or maybe I can just create
-    a new param dedicated to overdues?
-  */
   const schedule = (
     tasksToProcess: CalendarTaskUnscheduled[],
     currentTime: Temporal.PlainTime,
@@ -63,7 +57,7 @@ export const scheduleTasksInSlot = (
       proposedEnd: taskEndTime.toString(),
     });
 
-    const overlappingEvent: CalendarItem | undefined = busyEvents.find(
+    const overlappingEntry: CalendarEntry | undefined = busyEntries.find(
       (e) =>
         e.start &&
         e.end &&
@@ -71,17 +65,17 @@ export const scheduleTasksInSlot = (
         Temporal.PlainTime.compare(taskEndTime, e.start.add(e.bufferBefore) ) === 1,
     );
 
-    overlappingEvent &&
+    overlappingEntry &&
       console.log(
         "Overlaps with: ",
-        overlappingEvent.id,
+        overlappingEntry.id,
         " Skipped proposed time",
       );
 
-    if (overlappingEvent && overlappingEvent.end)
+    if (overlappingEntry && overlappingEntry.end)
       return schedule(
         tasksToProcess,
-        Temporal.PlainTime.from(overlappingEvent.end.add(overlappingEvent.bufferAfter)),
+        Temporal.PlainTime.from(overlappingEntry.end.add(overlappingEntry.bufferAfter)),
         sortedTasks,
         overDueTasks,
       );
@@ -147,5 +141,5 @@ export const scheduleTasksInSlot = (
     handle the per day side
   */
   console.log("Starting time at ", startingTime.toString());
-  return schedule(sortTasks, startingTime, [], []);
+  return schedule(sortedTasksByWeight, startingTime, [], []);
 };

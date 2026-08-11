@@ -1,21 +1,21 @@
-import { deleteCalItem } from "../db/queries/events";
+import { deleteEntry} from "../db/queries/entries";
 
-interface DeleteCalItemButtonProps {
-  calItemId: string;
+interface DeleteEntryButtonProps {
+  entryId: string;
   onOk?: () => void;
   onError?: (error: string) => void;
 }
 
-export const DeleteCalItemButton = ({
-  calItemId,
+export const DeleteEntryButton = ({
+  entryId,
   onOk,
   onError,
-}: DeleteCalItemButtonProps) => {
+}: DeleteEntryButtonProps) => {
   const handleClick = async () => {
     const isDelete = confirm("Delete item?");
     if (!isDelete) return;
 
-    const result = await deleteCalItem(calItemId);
+    const result = await deleteEntry(entryId);
     if (result.ok) onOk && onOk();
     else onError && onError(result.error);
   };

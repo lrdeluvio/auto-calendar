@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import type { EventDbModel } from "../../db/types";
+import type { EntryDbModel } from "../../db/types";
 
-type CalItemFormProps = {
+type EntryFormProps = {
   onOk?: () => void;
   onError?: (e: any) => void;
   children?: ReactNode;
@@ -13,12 +13,12 @@ type CalItemFormProps = {
     }
   | {
       mode: "edit" | "view";
-      data: EventDbModel;
-      updateFormAction: (formData: FormData, calItem: EventDbModel) => void;
+      data: EntryDbModel;
+      updateFormAction: (formData: FormData, entry: EntryDbModel) => void;
     }
 );
 
-export const CalItemForm = (props: CalItemFormProps) => {
+export const EntryForm = (props: EntryFormProps) => {
   const { mode, data, onOk, onError, children } = props;
   const isViewOnly = mode === "view";
 

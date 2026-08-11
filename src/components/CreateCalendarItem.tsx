@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import type { CalendarItemType } from "../types/models/calendarItem";
-import { CalItemForm } from "./form/CalItemForm";
-import { CalItemFormFields,  } from "./form/CalItemFormFields";
+import type { CalendarEntryType } from "../types/models/CalendarEntry";
+import { EntryForm } from "./form/EntryForm";
+import { EntryFormFields,  } from "./form/EntryFormFields";
 import { createEventFromForm } from "./form/eventFromForm";
 import { createTaskFromForm } from "./form/taskFromForm";
 
-interface CreateCalendarItemButtonProp {
-  defaultItemType: CalendarItemType;
+interface CreateEntryButtonProp {
+  defaultItemType: CalendarEntryType;
 }
 
-export const CreateCalendarItemButton = ({
+export const CreateEntryButton = ({
   defaultItemType,
-}: CreateCalendarItemButtonProp) => {
-  const [itemType, setItemType] = useState<CalendarItemType>(defaultItemType);
+}: CreateEntryButtonProp) => {
+  const [itemType, setItemType] = useState<CalendarEntryType>(defaultItemType);
   useEffect(() => console.log(itemType), [itemType]);
   return (
     <>
@@ -24,7 +24,7 @@ export const CreateCalendarItemButton = ({
           id="item-type-event"
           value={"event"}
           checked={itemType === "event"}
-          onChange={(e) => setItemType(e.target.value as CalendarItemType)}
+          onChange={(e) => setItemType(e.target.value as CalendarEntryType)}
           required
         />
 
@@ -40,19 +40,19 @@ export const CreateCalendarItemButton = ({
         />
 
         {itemType === "task" ? (
-          <CalItemForm
+          <EntryForm
             mode="create"
             createFormAction={(formData) => createTaskFromForm(formData)}
           >
-            <CalItemFormFields isViewOnly={false} itemType={"task"} />
-          </CalItemForm>
+            <EntryFormFields isViewOnly={false} itemType={"task"} />
+          </EntryForm>
         ) : (
-          <CalItemForm
+          <EntryForm
             mode="create"
             createFormAction={(formData) => createEventFromForm(formData)}
           >
-            <CalItemFormFields isViewOnly={false} itemType={"event"} />
-          </CalItemForm>
+            <EntryFormFields isViewOnly={false} itemType={"event"} />
+          </EntryForm>
         )}
 
         <button

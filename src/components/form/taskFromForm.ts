@@ -1,11 +1,11 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { db } from "../../db/db";
-import { addEvent } from "../../db/queries/events";
+import { addEntry } from "../../db/queries/entries";
 import type { Weight } from "../../types/common";
 import type {
   CalendarTaskUnscheduled,
   CalendarTask,
-} from "../../types/models/calendarItem";
+} from "../../types/models/CalendarEntry";
 import { sortTasks } from "../../utils/sortTasks";
 
 export const createTaskFromForm = async (data: FormData) => {
@@ -50,10 +50,10 @@ export const createTaskFromForm = async (data: FormData) => {
           startDate: Temporal.PlainDateTime.from(String(data.get("start"))),
           dueDate: Temporal.PlainDateTime.from(String(data.get("end"))),
         };
-  const eventResponse = await addEvent(task);
+  const entryResponse = await addEntry(task);
 
-  if (!eventResponse.ok) {
-    alert(eventResponse.error);
+  if (!entryResponse.ok) {
+    alert(entryResponse.error);
     return;
   }
 

@@ -2,10 +2,10 @@ import { Temporal } from "@js-temporal/polyfill";
 import { agenda } from "../core/agenda";
 import { db } from "../db/db";
 import { getAllTimeSlots } from "../db/queries/slots";
-import { bulkFromEventDbModel, fromTimeSlotDbModel } from "../db/modelMappers";
+import { bulkFromEntryDbModel, fromTimeSlotDbModel } from "../db/modelMappers";
 import {} from "../types/common";
 import { getWeekBounds } from "./getWeekBounds";
-import type { CalendarTaskUnscheduled } from "../types/models/calendarItem";
+import type { CalendarTaskUnscheduled } from "../types/models/CalendarEntry";
 
 export const sortTasks = async () => {
   const { startOfWeek, endOfWeek } = getWeekBounds(undefined, 2);
@@ -23,7 +23,7 @@ export const sortTasks = async () => {
         e.dueDate <= endOfWeek.toString(),
     )
     .toArray()
-    .then((arr) => bulkFromEventDbModel(arr))
+    .then((arr) => bulkFromEntryDbModel(arr))
     .then((t) =>
       t.ok
         ? t.data.map(
@@ -41,12 +41,12 @@ export const sortTasks = async () => {
   /*
     Using .filter is slow, should use .where instead but since isBusy: boolean it won't work
     because of https://dexie.org/docs/Indexable-Type. Though it will be fairly easy to implement
-    by just changing it to a number on EventDbModel and using to... and from...
+    by just changing it to a number on EntryDbModel and using to... and from...
   */
   const busyEvents = await db.events
     .filter((e) => (e.isBusy && !e.isSortable) || (e.isBusy && e.isDone))
     .toArray()
-    .then((arr) => bulkFromEventDbModel(arr))
+    .then((arr) => bulkFromEntryDbModel(arr))
     .then((e) => (e.ok ? e.data : []));
 
   const slots = await getAllTimeSlots().then((r) =>

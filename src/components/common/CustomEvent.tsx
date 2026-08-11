@@ -1,9 +1,9 @@
 import { db } from "../../db/db";
-import type { EventDbModel } from "../../db/types";
+import type { EntryDbModel } from "../../db/types";
 import { sortTasks } from "../../utils/sortTasks";
-import { useCalItemDialog } from "../form/CalItemDialog";
+import { useEntryDialog } from "../form/EntryDialog";
 
-export const CustomEvent = ({ event }: { event: EventDbModel }) => {
+export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
   const handleToggle = async (
     e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
   ) => {
@@ -27,7 +27,7 @@ export const CustomEvent = ({ event }: { event: EventDbModel }) => {
     }
   };
   // useEntryDialogView()
-  const {openDialog} = useCalItemDialog()
+  const {openDialog} = useEntryDialog()
 
   return (
     <>
