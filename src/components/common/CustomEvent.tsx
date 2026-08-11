@@ -1,14 +1,9 @@
 import { db } from "../../db/db";
 import type { EventDbModel } from "../../db/types";
 import { sortTasks } from "../../utils/sortTasks";
+import { useCalItemDialog } from "../form/CalItemDialog";
 
-export const CustomEvent = ({
-  event,
-  ref,
-}: {
-  event: EventDbModel;
-  ref: React.RefObject<HTMLDialogElement | null>;
-}) => {
+export const CustomEvent = ({ event }: { event: EventDbModel }) => {
   const handleToggle = async (
     e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
   ) => {
@@ -31,12 +26,14 @@ export const CustomEvent = ({
       console.warn(e);
     }
   };
+  // useEntryDialogView()
+  const {openDialog} = useCalItemDialog()
 
   return (
     <>
       <button
         style={{ backgroundColor: "red", width: "100%", height: "100%" }}
-        onClick={() => ref.current?.showModal()}
+        onClick={() => openDialog(event)}
       >
         {event.type === "task" && (
           <input
@@ -44,6 +41,7 @@ export const CustomEvent = ({
             name="isDone"
             id={event.id}
             checked={event.isDone}
+            // what's the difference between onClick and onChange?
             onClick={(e) => e.stopPropagation()}
             onChange={handleToggle}
           />
