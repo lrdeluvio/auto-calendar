@@ -43,7 +43,10 @@ export const EntryFormFields = ({
   const isEvent = itemType === "event";
   const isTask = itemType === "task";
   const slots = useLiveQuery(getAllTimeSlots);
-  const dateNow = Temporal.Now.plainDateTimeISO().toString();
+  const dateNow = Temporal.Now.plainDateISO().toString();
+  const dateTimeNow = Temporal.Now.plainDateTimeISO().toString({
+    smallestUnit: "minute",
+  });
   const common = { required: true, disabled: isViewOnly };
 
   const [autoSortForm, setAutoSortForm] = useState<boolean>(false);
@@ -51,7 +54,7 @@ export const EntryFormFields = ({
   useEffect(() => {
     if (!data || isEvent) return;
     setAutoSortForm(data.isSortable);
-  }, [data?.isSortable]); 
+  }, [data?.isSortable]);
 
   return (
     <>
@@ -78,14 +81,14 @@ export const EntryFormFields = ({
             label="Start"
             type="datetime-local"
             name="start"
-            defaultValue={data?.start}
+            defaultValue={data?.start ?? dateTimeNow}
             {...common}
           />
           <FormInput
             label="End"
             type="datetime-local"
             name="end"
-            defaultValue={data?.end}
+            defaultValue={data?.end ?? dateTimeNow}
             {...common}
           />
         </>
@@ -137,21 +140,21 @@ export const EntryFormFields = ({
                 label="Can be started on"
                 type="date"
                 name="startDate"
-                defaultValue={data?.startDate?.slice(0, 10)}
+                defaultValue={data?.startDate?.slice(0, 10) ?? dateNow}
                 {...common}
               />
               <FormInput
                 label="Due by"
                 type="date"
                 name="dueDate"
-                defaultValue={data?.dueDate?.slice(0, 10)}
+                defaultValue={data?.dueDate?.slice(0, 10) ?? dateNow}
                 {...common}
               />
             </>
           )}
         </>
       )}
-      
+
       <div style={{ display: "flex", flexDirection: "row" }}>
         <FormInput
           label={"Buffer Before"}
@@ -159,7 +162,9 @@ export const EntryFormFields = ({
           min="0"
           max="1440"
           name="bufferBefore"
-          defaultValue={data && Temporal.Duration.from(data.bufferBefore).minutes}
+          defaultValue={
+            (data && Temporal.Duration.from(data.bufferBefore).minutes) ?? 0
+          }
           {...common}
         />
         <FormInput
@@ -168,7 +173,9 @@ export const EntryFormFields = ({
           min="0"
           max="1440"
           name="bufferAfter"
-          defaultValue={data && Temporal.Duration.from(data.bufferAfter).minutes}
+          defaultValue={
+            (data && Temporal.Duration.from(data.bufferAfter).minutes) ?? 0
+          }
           {...common}
         />
       </div>
