@@ -102,12 +102,14 @@ export const EntryFormFields = ({
         <>
           <div style={{ display: "flex", flexDirection: "row" }}>
             {weightOptions.map((w) => {
+              console.log(data);
               return (
                 <FormInput
                   key={w.weight}
                   label={w.text}
                   type="radio"
                   name="weight"
+                  value={w.weight}
                   defaultChecked={
                     data?.weight === w.weight || w.text === "Normal"
                   }
@@ -157,7 +159,7 @@ export const EntryFormFields = ({
           min="0"
           max="1440"
           name="bufferBefore"
-          defaultValue={data?.bufferBefore}
+          defaultValue={data && Temporal.Duration.from(data.bufferBefore).minutes}
           {...common}
         />
         <FormInput
@@ -166,7 +168,7 @@ export const EntryFormFields = ({
           min="0"
           max="1440"
           name="bufferAfter"
-          defaultValue={data?.bufferAfter}
+          defaultValue={data && Temporal.Duration.from(data.bufferAfter).minutes}
           {...common}
         />
       </div>
