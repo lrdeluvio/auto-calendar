@@ -96,7 +96,7 @@ export const EntryFormFields = ({
         <FormSelect
           label="Duration"
           name="duration"
-          defaultValue={25}
+          defaultSelected={(data && Temporal.Duration.from(data.duration).minutes) ?? 25}
           options={durationOptions}
           {...common}
         />
@@ -127,12 +127,15 @@ export const EntryFormFields = ({
               <FormSelect
                 label="Timeslots"
                 name="slotId"
-                defaultValue={data?.slotId}
+                defaultSelected={data?.slotId}
                 options={
                   (slots?.ok &&
-                    slots.data.map((s) => ({ label: s.name, value: s.id }))) ||
+                    slots.data.map((s) => {
+                      console.log(data?.slotId, s.id) 
+                      return { label: s.name, value: s.id }})) ||
                   []
                 }
+                
                 {...common}
               />
 
