@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "bun test",
-    "preview": "vite preview"
+    "preview": "vite preview --port 2034 --host"
   },
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",
@@ -17,7 +17,8 @@
     "dexie-react-hooks": "^4.4.0",
     "react": "^19.2.7",
     "react-big-calendar": "^1.19.4",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

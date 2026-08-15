@@ -12,6 +12,7 @@
         "react": "^19.2.7",
         "react-big-calendar": "^1.19.4",
         "react-dom": "^19.2.7",
+        "zod": "^4.4.3",
       },
       "devDependencies": {
         "@eslint/js": "^10.0.1",
