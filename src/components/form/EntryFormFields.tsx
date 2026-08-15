@@ -119,11 +119,9 @@ const TaskFields = ({
   common: any;
 }) => {
   const slots = useLiveQuery(getAllTimeSlots);
-  const [autoSortForm, setAutoSortForm] = useState<boolean>(
-    data?.isSortable ?? false,
-  );
+  const [autoSortForm, setAutoSortForm] = useState(data?.isSortable ?? false);
+  const [isBusy, setIsBusy] = useState(data?.isBusy ?? true);
 
-  const [isBusy, setIsBusy] = useState<boolean>(data?.isBusy ?? true);
   return (
     <>
       <FormInput
@@ -165,7 +163,7 @@ const TaskFields = ({
           label="Duration"
           name="duration"
           defaultSelected={
-            (data && Temporal.Duration.from(data.duration).minutes) ?? 25
+            (data && fromISODuration(data.duration)) ?? 25
           }
           options={durationOptions}
           {...common}
@@ -206,16 +204,24 @@ const TaskFields = ({
 
           <FormInput
             label="Can be started on"
-            type="date"
+            type="datetime-local"
             name="startDate"
-            defaultValue={data?.startDate?.slice(0, 10) ?? dateNow.toString()}
+            defaultValue={
+              data?.startDate ??
+              dateNow.toPlainDateTime().toString({ smallestUnit: "minutes" })
+            }
             {...common}
           />
           <FormInput
             label="Due by"
-            type="date"
+            type="datetime-local"
             name="dueDate"
-            defaultValue={data?.dueDate?.slice(0, 10) ?? dateNow.toString()}
+            defaultValue={
+              data?.dueDate ??
+              dateNow
+                .toPlainDateTime({ hour: 23, minute: 59 })
+                .toString({ smallestUnit: "minutes" })
+            }
             {...common}
           />
         </>

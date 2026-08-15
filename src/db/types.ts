@@ -1,4 +1,5 @@
 import type { Weight } from "../types/common";
+import * as z from "zod";
 
 export interface TimeSlotDbModel {
   id: string;
@@ -7,27 +8,35 @@ export interface TimeSlotDbModel {
   end: string;
 }
 
-export interface EntryDbModel {
-  type: "event" | "task";
-  id: string;
-  name: string;
-  notes: string;
+const duration = z.preprocess((val) => {
+  const num = Number(val);
+  if (!Number.isNaN(num)) return `PT${num}M`;
+  return val;
+}, z.iso.duration());
 
-  start: string; // date-time in the RFC 9557 format
-  end: string; // date-time in the RFC 9557 format
+export const entryDbModel = z.object({
+  type: z.literal(["event", "task"]),
+  id: z.uuidv4(),
+  name: z.string().nonempty(),
+  notes: z.string(),
 
-  isBusy: boolean;
-  isDone: boolean;
-  isSortable: boolean;
-  isSorted: boolean;
+  start: z.iso.datetime(),
+  end: z.iso.datetime(),
 
-  duration: string; // duration in the ISO 8601 format
-  weight: Weight;
-  slotId: string;
+  isBusy: z.boolean(),
+  isDone: z.boolean(),
+  isSortable: z.boolean(),
+  isSorted: z.boolean(),
 
-  bufferBefore: string; // duration in the ISO 8601 format
-  bufferAfter: string; // duration in the ISO 8601 format
+  duration: duration,
+  weight: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  slotId: z.uuidv4(),
 
-  startDate: string; //  date-time in the RFC 9557 format
-  dueDate: string; //  date-time in the RFC 9557 format
-}
+  bufferBefore: z.iso.time(),
+  bufferAfter: z.iso.time(),
+
+  startDate: z.iso.datetime(),
+  dueDate: z.iso.datetime(),
+});
+
+export type EntryDbModel = z.infer<typeof entryDbModel>;

@@ -70,15 +70,22 @@ const localizer = dateFnsLocalizer({
   - [x] BUG: I also just realized the buffer feature won't work for events
   - [ ] NOTE: we might not need to use a lot of useState that stores entry objects since 
     - we use useLiveQuery; https://dexie.org/docs/dexie-react-hooks/useLiveQuery()
-  - [ ] BUG: on creating tasks, buffers are not being saved, I think it's on all the inputs?
+  - [x] BUG: on creating tasks, buffers are not being saved, I think it's on all the inputs?
   - [x] BUG huhu: it seems that future busyEvents are being referenced in the current date
    - Must have something to do in scheduleTasksInDate, maybe I need to filter the busyEvents per scheduleTasksInDateInSlotCall
    Ex: today is 08, 6:00, if theres a busy event in 09 6:00-6:30, that time won't be abailable to 08 
-  - [ ] refactor names for consistency!!
+  - [x] refactor names for consistency!!
   - [ ] add a isBusy toggle on events
-  - [ ] add default value on the form
-  - [ ] entry -> entry
+  - [x] add default value on the form
   - [ ] branded types for readability: https://gemini.google.com/app/d445b8e5d85bc859
+  - [x] BUG: seems that tasks saving is not working properly and displays missing weight and buffer
+  - [ ] BUG: buffer BEFORE not working.
+  - [ ] Add check for dates, like end > start, etc.
+*/
+
+/*
+FLOW:
+db(EntryDbModel) => components(EntryDbModel) => Forms(primive) => logic(Entry) => Forms(primitive)
 */
 
 function App() {
