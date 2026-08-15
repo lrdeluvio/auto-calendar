@@ -75,24 +75,35 @@ const EventFields = ({
   data: EntryDbModel | undefined;
   dateTimeNow: Temporal.PlainDateTime;
   common: any;
-}) => (
-  <>
-    <FormInput
-      label="Start"
-      type="datetime-local"
-      name="start"
-      defaultValue={data?.start ?? dateTimeNow.toString()}
-      {...common}
-    />
-    <FormInput
-      label="End"
-      type="datetime-local"
-      name="end"
-      defaultValue={data?.end ?? dateTimeNow.toString()}
-      {...common}
-    />
-  </>
-);
+}) => {
+  const [isBusy, setIsBusy] = useState<boolean>(data?.isBusy ?? true);
+
+  return (
+    <>
+      <FormInput
+        label="Busy"
+        type="checkbox"
+        name="isBusy"
+        checked={isBusy}
+        onChange={(e) => setIsBusy(e.target.checked)}
+      />
+      <FormInput
+        label="Start"
+        type="datetime-local"
+        name="start"
+        defaultValue={data?.start ?? dateTimeNow.toString()}
+        {...common}
+      />
+      <FormInput
+        label="End"
+        type="datetime-local"
+        name="end"
+        defaultValue={data?.end ?? dateTimeNow.toString()}
+        {...common}
+      />
+    </>
+  );
+};
 
 const TaskFields = ({
   data,
@@ -111,8 +122,19 @@ const TaskFields = ({
   const [autoSortForm, setAutoSortForm] = useState<boolean>(
     data?.isSortable ?? false,
   );
+
+  const [isBusy, setIsBusy] = useState<boolean>(data?.isBusy ?? true);
   return (
     <>
+      <FormInput
+        label="Busy"
+        type="checkbox"
+        name="isBusy"
+        checked={autoSortForm ? true : isBusy}
+        onChange={(e) => setIsBusy(e.target.checked)}
+        disabled={autoSortForm || isViewOnly}
+        required
+      />
       <FormInput
         label="Auto Sort?"
         type="checkbox"
@@ -121,7 +143,6 @@ const TaskFields = ({
         onChange={(e) => setAutoSortForm(e.target.checked)}
         disabled={isViewOnly}
       />
-
       {!autoSortForm ? (
         <>
           <FormInput
@@ -150,7 +171,6 @@ const TaskFields = ({
           {...common}
         />
       )}
-
       <div style={{ display: "flex", flexDirection: "row" }}>
         {weightOptions.map((w) => {
           console.log(data);
@@ -167,7 +187,6 @@ const TaskFields = ({
           );
         })}
       </div>
-
       {autoSortForm && (
         <>
           <FormSelect
@@ -248,6 +267,9 @@ export const EntryFormFields = ({
         bufferAfter={(data && fromISODuration(data.bufferAfter)) ?? 0}
         common={common}
       />
+
+      <label htmlFor="notes">Notes</label>
+      <textarea name="notes" id="notes" {...common}></textarea>
     </>
   );
 };
