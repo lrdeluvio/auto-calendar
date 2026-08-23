@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import type { Weight } from "../common";
 
 interface BaseEntry {

@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import { agenda } from "../core/agenda";
 import { db } from "../db/db";
 import { getAllTimeSlots } from "../db/queries/slots";

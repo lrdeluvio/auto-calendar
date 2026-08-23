@@ -3,7 +3,6 @@ import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { parse, format, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
-import { Temporal } from "@js-temporal/polyfill";
 import { CreateTimeslotButton } from "./components/CreateTimeslots";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "./db/db";

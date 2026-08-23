@@ -3,7 +3,6 @@ import type { TimeSlot } from "../../types/models/TimeSlot";
 import { db } from "../db";
 import { toTimeSlotDbModel } from "../modelMappers";
 import type { TimeSlotDbModel } from "../types";
-import { Temporal } from "@js-temporal/polyfill";
 
 /**
  * Validates a slot against existing slots for range boundaries and duration

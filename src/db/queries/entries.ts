@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import type { Result } from "../../types/common";
 import type {
   CalendarEvent,

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { type CalendarEntryType } from "../../types/models/CalendarEntry";
-import { Temporal } from "@js-temporal/polyfill";
 import { useLiveQuery } from "dexie-react-hooks";
 import { getAllTimeSlots } from "../../db/queries/slots";
 import type { EntryDbModel } from "../../db/types";

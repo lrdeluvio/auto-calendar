@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import { db } from "../../db/db";
 import { addEntry } from "../../db/queries/entries";
 import type { Weight } from "../../types/common";

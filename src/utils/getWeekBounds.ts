@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 
 export function getWeekBounds(anchorDate = Temporal.Now.plainDateISO(), weeks: number = 1) {
   const baseDate = anchorDate.toPlainDateTime({ hour: 0, minute: 0 });

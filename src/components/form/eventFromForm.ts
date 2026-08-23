@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import { addEntry } from "../../db/queries/entries";
 import type { CalendarEvent } from "../../types/models/CalendarEntry";
 import { sortTasks } from "../../utils/sortTasks";
