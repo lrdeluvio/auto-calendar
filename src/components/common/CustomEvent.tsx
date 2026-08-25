@@ -1,7 +1,6 @@
 import { db } from "../../db/db";
 import type { EntryDbModel } from "../../db/types";
 import { sortTasks } from "../../utils/sortTasks";
-import { useEntryDialog } from "../form/EntryDialog";
 
 export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
   const handleToggle = async (
@@ -26,14 +25,11 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
       console.warn(e);
     }
   };
-  // useEntryDialogView()
-  const {openDialog} = useEntryDialog()
 
   return (
     <>
       <button
         style={{ backgroundColor: "red", width: "100%", height: "100%" }}
-        onClick={() => openDialog(event)}
       >
         {event.type === "task" && (
           <input

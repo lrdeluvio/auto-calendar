@@ -16,10 +16,6 @@ import { EntryForm } from "./components/form/EntryForm";
 import { updateTaskFromForm } from "./components/form/taskFromForm";
 import { CustomEvent } from "./components/common/CustomEvent";
 import { DeleteEntryButton } from "./components/DeleteEntryButton";
-import {
-  EntryDialog,
-  useEntryDialog,
-} from "./components/form/EntryDialog";
 
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
@@ -30,9 +26,14 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+/*
+I should drop the use of pop up dialogs for now. Instead I was thinking
+of maybe just using a pagination system for now which is much more
+simpler I think. 
+*/
+
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { entry, closeDialog } = useEntryDialog();
   const { startOfWeek, endOfWeek } = getWeekBounds(
     Temporal.PlainDate.from({
       year: currentDate.getFullYear(),
@@ -58,12 +59,12 @@ function App() {
 
   return (
     <>
-      <CreateEntryButton defaultItemType={"event"} />
-      <CreateTimeslotButton></CreateTimeslotButton>
+      {/* <CreateEntryButton defaultItemType={"event"} /> */}
+      {/* <CreateTimeslotButton></CreateTimeslotButton>
       <ViewUnsortedTasksButton></ViewUnsortedTasksButton>
-      <SortTasksButton />
+      <SortTasksButton /> */}
 
-      <EntryDialog>
+      {/* <EntryDialog>
         {entry && (
           <EntryForm
             mode="edit"
@@ -86,7 +87,7 @@ function App() {
             />
           </EntryForm>
         )}
-      </EntryDialog>
+      </EntryDialog> */}
 
       <Calendar
         events={events ? events : undefined}

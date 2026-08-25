@@ -52,3 +52,5 @@
 FLOW:
 db(EntryDbModel) => components(EntryDbModel) => Forms(primive) => logic(Entry) => Forms(primitive)
 _/
+
+react-big-calendar's Calendar component is causing this warning: Your app (or one of its dependencies) is using an outdated JSX transform. Update to the modern JSX transform for faster performance: https://react.dev/link/new-jsx-transform
