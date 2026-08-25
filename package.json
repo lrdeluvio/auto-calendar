@@ -11,6 +11,7 @@
     "preview": "vite preview --port 2034 --host"
   },
   "dependencies": {
+    "@ebay/nice-modal-react": "^1.2.13",
     "date-fns": "^4.4.0",
     "dexie": "^4.4.5",
     "dexie-react-hooks": "^4.4.0",
