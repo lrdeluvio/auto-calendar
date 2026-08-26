@@ -1,12 +1,13 @@
 import type { Weight } from "../types/common";
 import * as z from "zod";
 
-export interface TimeSlotDbModel {
-  id: string;
-  name: string;
-  start: string;
-  end: string;
-}
+export const timeslotDbModel = z.object({
+  id: z.uuidv4(),
+  name: z.string(),
+  start: z.iso.time(),
+  end: z.iso.time(),
+});
+export type TimeSlotDbModel = z.infer<typeof timeslotDbModel>;
 
 const duration = z.preprocess((val) => {
   const num = Number(val);
