@@ -11,7 +11,7 @@ export const Modal = ({ children }: { children: ReactNode }) => {
   }, [modal.visible]);
 
   return (
-    <dialog ref={dialogRef} onClose={() => modal.hide().then(() => modal.remove())}>
+    <dialog ref={dialogRef} onCancel={() => modal.hide()}>
       {children}
     </dialog>
   );
