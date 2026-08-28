@@ -6,14 +6,8 @@ import type { Result } from "../../types/common";
 
 const timeslotFormModel = z.object({
   name: z.string(),
-  start: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .transform((time) => `${time}:00`),
-  end: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .transform((time) => `${time}:00`),
+  start: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
+  end: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
 });
 
 const createTimeslotFromForm = async (data: FormData): Promise<Result<string, string>> => {
@@ -41,7 +35,7 @@ export const CreateTimeslotModal = NiceModal.create(() => {
     if (!result.ok) {
       alert(result.error);
       return;
-    } else modal.hide().then(() => modal.remove());
+    } else modal.remove();
   };
 
   return (

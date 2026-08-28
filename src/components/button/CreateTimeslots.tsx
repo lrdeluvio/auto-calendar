@@ -1,5 +1,5 @@
 import NiceModal from "@ebay/nice-modal-react";
-import { CreateTimeslotModal } from "./modals/CreateTimeslotModal";
+import { CreateTimeslotModal } from "../modals/CreateTimeslotModal";
 
 export const CreateTimeslotButton = () => {
   return (
