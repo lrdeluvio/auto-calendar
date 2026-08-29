@@ -132,11 +132,18 @@ const TaskFields = ({
         disabled={autoSortForm || isViewOnly}
         required
       />
+      <input
+        type="hidden"
+        name="isSortable"
+        disabled={isViewOnly}
+        value="false"
+      />
       <FormInput
         label="Auto Sort?"
         type="checkbox"
         name="isSortable"
         checked={autoSortForm}
+        value="true"
         onChange={(e) => setAutoSortForm(e.target.checked)}
         disabled={isViewOnly}
       />
@@ -242,7 +249,7 @@ export const EntryFormFields = ({
   isViewOnly,
 }: EntryFormFieldsProps) => {
   const dateNow = Temporal.Now.plainDateISO();
-  const dateTimeNow = Temporal.Now.plainDateTimeISO();
+  const dateTimeNow = Temporal.Now.plainDateTimeISO().round("minute");
   const common = { required: true, disabled: isViewOnly };
 
   return (

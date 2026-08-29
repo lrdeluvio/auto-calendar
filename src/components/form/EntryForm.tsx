@@ -1,53 +1,41 @@
 import type { ReactNode } from "react";
 import type { EntryDbModel } from "../../db/types";
+import type { Result } from "../../types/common";
 
 type EntryFormProps = {
   onOk?: () => void;
   onError?: (e: any) => void;
-  children?: ReactNode;
+  children: ReactNode;
 } & (
   | {
       mode: "create";
-      data?: undefined;
-      createFormAction: (formData: FormData) => void;
+      createFormAction: (formData: FormData) => Promise<Result<string, string>>;
     }
   | {
-      mode: "edit" | "view";
+      mode: "edit";
       data: EntryDbModel;
-      updateFormAction: (formData: FormData, entry: EntryDbModel) => void;
+      updateFormAction: (formData: FormData, entry: EntryDbModel) => Promise<Result<string, string>>;
     }
 );
 
 export const EntryForm = (props: EntryFormProps) => {
-  const { mode, data, onOk, onError, children } = props;
-  const isViewOnly = mode === "view";
+  const { mode, onOk, onError, children } = props;
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const result =
+      mode === "create" ? await props.createFormAction(formData) : await props.updateFormAction(formData, props.data);
 
-  const handleFormAction = (formData: FormData) => {
-    try {
-      mode === "create"
-        ? props.createFormAction(formData)
-        : mode === "edit" && data
-          ? props.updateFormAction(formData, data)
-          : undefined;
-
-      onOk && onOk();
-    } catch (e) {
-      onError && onError(e);
-    }
+    if (!result.ok) {
+      onError && onError(result.error);
+      return;
+    } else onOk && onOk();
   };
 
   return (
-    <form
-      action={handleFormAction}
-      style={{ display: "flex", flexDirection: "column" }}
-    >
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }}>
       {children}
-
-      {!isViewOnly && (
-        <button type="submit">{mode === "create" ? "Create" : "Update"}</button>
-      )}
+      <button type="submit">{mode === "create" ? "Create" : "Update"}</button>
     </form>
   );
 };
-
-      

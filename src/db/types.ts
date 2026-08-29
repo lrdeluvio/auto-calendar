@@ -9,18 +9,12 @@ export const timeslotDbModel = z.object({
 });
 export type TimeSlotDbModel = z.infer<typeof timeslotDbModel>;
 
-const duration = z.preprocess((val) => {
-  const num = Number(val);
-  if (!Number.isNaN(num)) return `PT${num}M`;
-  return val;
-}, z.iso.duration());
-
 export const entryDbModel = z.object({
   type: z.literal(["event", "task"]),
   id: z.uuidv4(),
-  name: z.string().nonempty(),
+  name: z.string(),
   notes: z.string(),
-
+// need to add {local: true} to iso stuff
   start: z.iso.datetime(),
   end: z.iso.datetime(),
 
@@ -29,7 +23,11 @@ export const entryDbModel = z.object({
   isSortable: z.boolean(),
   isSorted: z.boolean(),
 
-  duration: duration,
+  duration: z.preprocess((val) => {
+    const num = Number(val);
+    if (!Number.isNaN(num)) return `PT${num}M`;
+    return val;
+  }, z.iso.duration()),
   weight: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
   slotId: z.uuidv4(),
 

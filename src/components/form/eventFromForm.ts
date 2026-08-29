@@ -1,34 +1,46 @@
 import { addEntry } from "../../db/queries/entries";
-import type { CalendarEvent } from "../../types/models/CalendarEntry";
+import type { Result } from "../../types/common";
 import { sortTasks } from "../../utils/sortTasks";
+import * as z from "zod";
 
-export const createEventFromForm = async (data: FormData) => {
-  const start = Temporal.PlainDateTime.from(String(data.get("start")));
-  const end = Temporal.PlainDateTime.from(String(data.get("end")));
+const eventEntryFormModel = z.object({
+  name: z.string(),
+  notes: z.string(),
 
-  const event: Omit<CalendarEvent, "id"> = {
+  start: z.iso.datetime({ local: true }).transform((d) => Temporal.PlainDateTime.from(d)),
+  end: z.iso.datetime({ local: true }).transform((d) => Temporal.PlainDateTime.from(d)),
+
+  bufferBefore: z.coerce
+    .number()
+    .min(0)
+    .transform((d) => Temporal.Duration.from({ minutes: d })),
+  bufferAfter: z.coerce
+    .number()
+    .min(0)
+    .transform((d) => Temporal.Duration.from({ minutes: d })),
+});
+
+export const createEventFromForm = async (data: FormData): Promise<Result<string, string>> => {
+  const parseResult = eventEntryFormModel.safeParse(Object.fromEntries(data));
+  if (parseResult.error) return { ok: false, error: JSON.stringify(parseResult.error) };
+
+  const { start, end } = parseResult.data;
+  const saveResult = await addEntry({
     type: "event",
-    name: String(data.get("name")),
-    notes: String(data.get("notes")),
-    start: start,
-    end: end,
     isBusy: true,
     isDone: false,
     isSortable: false,
     isSorted: false,
     duration: end.since(start),
     weight: 1,
-    slotId: String(data.get("timeslots")),
-    bufferBefore: Temporal.Duration.from({ minutes: Number(data.get("bufferBefore")) }),
-    bufferAfter: Temporal.Duration.from({minutes: Number(data.get("bufferBefore"))}),
     startDate: start,
     dueDate: end,
-  };
-  const entryResponse = await addEntry(event);
-  if (!entryResponse.ok) {
-    alert(entryResponse.error);
-    return;
-  }
+    slotId: "",
+    ...parseResult.data,
+  });
+
+  if (!saveResult.ok) return saveResult;
 
   sortTasks();
+  return saveResult;
 };
