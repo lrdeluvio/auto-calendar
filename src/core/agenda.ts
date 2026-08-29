@@ -42,7 +42,7 @@ export const agenda = (
 
     const tasksInDate = allTasks.filter((task) => {
       return (
-        Temporal.PlainDateTime.compare(task.startDate ?? {}, date) === -1 ||
+        Temporal.PlainDateTime.compare(task.startDate ?? {}, date) <= 0 ||
         (task.startDate?.equals(date) && task.dueDate?.equals(date))
       );
     });
