@@ -3,20 +3,18 @@ import type { EntryDbModel } from "../../db/types";
 import { sortTasks } from "../../utils/sortTasks";
 
 export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
-  const handleToggle = async (
-    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
-  ) => {
-    const currentTime = Temporal.Now.plainDateTimeISO();
-    const isEventAfterCurrentTime =
-      Temporal.PlainDateTime.compare(event.start, currentTime) === 1;
+  const handleToggle = async (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
+    const currentDateTime = Temporal.Now.plainDateTimeISO().round("minute");
+    const isEventAftercurrentDateTime =
+      Temporal.PlainDateTime.compare(Temporal.PlainDateTime.from(event.start), currentDateTime) <= 0;
 
     try {
       await db.events.update(event.id, {
         isDone: e.target.checked,
-        ...(isEventAfterCurrentTime
+        ...(isEventAftercurrentDateTime
           ? {
-              end: currentTime.toString(),
-              start: currentTime.subtract(event.duration).toString(),
+              end: currentDateTime.toString(),
+              start: currentDateTime.subtract(event.duration).toString(),
             }
           : {}),
       });
