@@ -80,10 +80,11 @@ export const createTaskFromForm = async (data: FormData): Promise<Result<string,
   sortTasks();
   return saveResult;
 };
-export const updateTaskFromForm = async (data: FormData, id: string) => {
+
+export const updateTaskFromForm = async (data: FormData, id: string): Promise<Result<string, string>> => {
   const update = {
     name: String(data.get("name")),
-    isSortable: data.get("isSortable") === "on",
+    isSortable: data.getAll("isSortable").includes("true") ? true : false,
     weight: Number(data.get("weight")) as Weight,
     bufferBefore: Temporal.Duration.from({
       minutes: Number(data.get("bufferBefore")),
@@ -91,6 +92,7 @@ export const updateTaskFromForm = async (data: FormData, id: string) => {
     bufferAfter: Temporal.Duration.from({
       minutes: Number(data.get("bufferAfter")),
     }).toString(),
+    notes: String(data.get("notes")),
     ...(data.get("duration")
       ? {
           duration: Temporal.Duration.from({
@@ -100,34 +102,36 @@ export const updateTaskFromForm = async (data: FormData, id: string) => {
       : {}),
     ...(data.get("start")
       ? {
-          start: Temporal.PlainDateTime.from(String(data.get("start"))).toString(),
+          start: Temporal.PlainDateTime.from(String(data.get("start"))).round("minute").toString(),
         }
       : {}),
     ...(data.get("end")
       ? {
-          end: Temporal.PlainDateTime.from(String(data.get("end"))).toString(),
+          end: Temporal.PlainDateTime.from(String(data.get("end"))).round("minute").toString(),
         }
       : {}),
-    ...(data.get("timeslots")
+    ...(data.get("slotId")
       ? {
-          slotId: String(data.get("timeslots")),
+          slotId: String(data.get("slotId")),
         }
       : {}),
     ...(data.get("startDate")
       ? {
-          startDate: Temporal.PlainDate.from(String(data.get("startDate"))).toString(),
+          startDate: Temporal.PlainDateTime.from(String(data.get("startDate"))).round("minute").toString(),
         }
       : {}),
     ...(data.get("dueDate")
       ? {
-          dueDate: Temporal.PlainDate.from(String(data.get("dueDate"))).toString(),
+          dueDate: Temporal.PlainDateTime.from(String(data.get("dueDate"))).round("minute").toString(),
         }
       : {}),
   };
+
   try {
     await db.events.update(id, update);
     sortTasks();
+    return { ok: true, data: id };
   } catch (e) {
-    console.warn(e);
+    return { ok: false, error: String(e) };
   }
 };

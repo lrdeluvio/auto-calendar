@@ -120,7 +120,7 @@ const TaskFields = ({
   const slots = useLiveQuery(getAllTimeSlots);
   const [autoSortForm, setAutoSortForm] = useState(data?.isSortable ?? false);
   const [isBusy, setIsBusy] = useState(data?.isBusy ?? true);
-
+  
   return (
     <>
       <FormInput
@@ -177,7 +177,6 @@ const TaskFields = ({
       )}
       <div style={{ display: "flex", flexDirection: "row" }}>
         {weightOptions.map((w) => {
-          console.log(data);
           return (
             <FormInput
               key={w.weight}
@@ -200,7 +199,6 @@ const TaskFields = ({
             options={
               (slots?.ok &&
                 slots.data.map((s) => {
-                  console.log(data?.slotId, s.id);
                   return { label: s.name, value: s.id };
                 })) ||
               []
@@ -238,7 +236,7 @@ const TaskFields = ({
 
 const fromISODuration = (duration: string) => {
   const iso = z.object({ duration: z.iso.duration() });
-  const x = iso.safeParse(duration);
+  const x = iso.safeParse({duration});
   if (x.error) return;
   return Temporal.Duration.from(x.data.duration).minutes;
 };
@@ -281,7 +279,7 @@ export const EntryFormFields = ({
       />
 
       <label htmlFor="notes">Notes</label>
-      <textarea name="notes" id="notes" {...common}></textarea>
+      <textarea name="notes" id="notes" defaultValue={data?.notes} {...common}></textarea>
     </>
   );
 };
