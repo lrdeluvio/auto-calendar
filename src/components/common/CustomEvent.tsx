@@ -1,6 +1,8 @@
+import NiceModal from "@ebay/nice-modal-react";
 import { db } from "../../db/db";
 import type { EntryDbModel } from "../../db/types";
 import { sortTasks } from "../../utils/sortTasks";
+import { EditEntryModal } from "../modals/EditEntryModal";
 
 export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
   const handleToggle = async (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
@@ -28,6 +30,9 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
     <>
       <button
         style={{ backgroundColor: "red", width: "100%", height: "100%" }}
+        onClick={() => {
+          NiceModal.show(EditEntryModal, { entry: event });
+        }}
       >
         {event.type === "task" && (
           <input
