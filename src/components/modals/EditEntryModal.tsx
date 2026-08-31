@@ -16,7 +16,7 @@ export const EditEntryModal = NiceModal.create(({ entry }: { entry: EntryDbModel
         updateFormAction={(formData, entry) => updateTaskFromForm(formData, entry.id)}
         onOk={() => modal.remove()}
       >
-        <EntryFormFields isViewOnly={false} itemType={"task"} data={entry} />
+        <EntryFormFields isViewOnly={false} itemType={entry.type} data={entry} />
       </EntryForm>
       <button onClick={() => modal.hide()}>Close</button>
       <DeleteEntryButton entryId={entry.id} onOk={() => modal.remove()} />
