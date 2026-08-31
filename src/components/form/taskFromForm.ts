@@ -1,11 +1,12 @@
 import { db } from "../../db/db";
 import { addEntry } from "../../db/queries/entries";
+import type { EntryDbModel } from "../../db/types";
 import type { Result, Weight } from "../../types/common";
 import type { CalendarTaskUnscheduled, CalendarTask } from "../../types/models/CalendarEntry";
 import { sortTasks } from "../../utils/sortTasks";
 import * as z from "zod";
 
-const baseTaskEntryFormModel = z.object({
+const baseTaskEntryFormSchema = z.object({
   name: z.string(),
   notes: z.string(),
 
@@ -21,10 +22,12 @@ const baseTaskEntryFormModel = z.object({
     .number()
     .min(0)
     .transform((d) => Temporal.Duration.from({ minutes: d })),
+
+  isBusy: z.coerce.boolean(),
 });
 
-const taskEntryFormModel = z.discriminatedUnion("isSortable", [
-  baseTaskEntryFormModel.safeExtend({
+const taskEntryFormSchema = z.discriminatedUnion("isSortable", [
+  baseTaskEntryFormSchema.safeExtend({
     isSortable: z.literal(true),
     slotId: z.uuidv4(),
     startDate: z.iso.datetime({ local: true }).transform((d) => Temporal.PlainDateTime.from(d)),
@@ -33,7 +36,7 @@ const taskEntryFormModel = z.discriminatedUnion("isSortable", [
       .union([z.coerce.number(), z.iso.duration()])
       .transform((d) => (typeof d === "number" ? Temporal.Duration.from({ minutes: d }) : Temporal.Duration.from(d))),
   }),
-  baseTaskEntryFormModel.safeExtend({
+  baseTaskEntryFormSchema.safeExtend({
     isSortable: z.literal(false),
     start: z.iso.datetime({ local: true }).transform((d) => Temporal.PlainDateTime.from(d)),
     end: z.iso.datetime({ local: true }).transform((d) => Temporal.PlainDateTime.from(d)),
@@ -41,7 +44,7 @@ const taskEntryFormModel = z.discriminatedUnion("isSortable", [
 ]);
 
 export const createTaskFromForm = async (data: FormData): Promise<Result<string, string>> => {
-  const parseResult = taskEntryFormModel.safeParse(
+  const parseResult = taskEntryFormSchema.safeParse(
     Object.fromEntries(
       [...data.entries()].map(([key, value]) => [
         key,
@@ -53,7 +56,6 @@ export const createTaskFromForm = async (data: FormData): Promise<Result<string,
 
   const baseTask = {
     type: "task",
-    isBusy: false,
     isDone: false,
     isSorted: false,
     ...parseResult.data,
@@ -82,9 +84,10 @@ export const createTaskFromForm = async (data: FormData): Promise<Result<string,
 };
 
 export const updateTaskFromForm = async (data: FormData, id: string): Promise<Result<string, string>> => {
-  const update = {
+  const update: Partial<EntryDbModel> = {
     name: String(data.get("name")),
     isSortable: data.getAll("isSortable").includes("true") ? true : false,
+    isBusy: data.get("isBusy") === "on" ? true : false,
     weight: Number(data.get("weight")) as Weight,
     bufferBefore: Temporal.Duration.from({
       minutes: Number(data.get("bufferBefore")),
@@ -102,12 +105,16 @@ export const updateTaskFromForm = async (data: FormData, id: string): Promise<Re
       : {}),
     ...(data.get("start")
       ? {
-          start: Temporal.PlainDateTime.from(String(data.get("start"))).round("minute").toString(),
+          start: Temporal.PlainDateTime.from(String(data.get("start")))
+            .round("minute")
+            .toString(),
         }
       : {}),
     ...(data.get("end")
       ? {
-          end: Temporal.PlainDateTime.from(String(data.get("end"))).round("minute").toString(),
+          end: Temporal.PlainDateTime.from(String(data.get("end")))
+            .round("minute")
+            .toString(),
         }
       : {}),
     ...(data.get("slotId")
@@ -117,12 +124,16 @@ export const updateTaskFromForm = async (data: FormData, id: string): Promise<Re
       : {}),
     ...(data.get("startDate")
       ? {
-          startDate: Temporal.PlainDateTime.from(String(data.get("startDate"))).round("minute").toString(),
+          startDate: Temporal.PlainDateTime.from(String(data.get("startDate")))
+            .round("minute")
+            .toString(),
         }
       : {}),
     ...(data.get("dueDate")
       ? {
-          dueDate: Temporal.PlainDateTime.from(String(data.get("dueDate"))).round("minute").toString(),
+          dueDate: Temporal.PlainDateTime.from(String(data.get("dueDate")))
+            .round("minute")
+            .toString(),
         }
       : {}),
   };

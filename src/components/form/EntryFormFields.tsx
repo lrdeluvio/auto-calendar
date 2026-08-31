@@ -128,9 +128,8 @@ const TaskFields = ({
         type="checkbox"
         name="isBusy"
         checked={autoSortForm ? true : isBusy}
-        onChange={(e) => setIsBusy(e.target.checked)}
-        disabled={autoSortForm || isViewOnly}
-        required
+        onChange={(e) => setIsBusy(autoSortForm ? true : e.target.checked)}
+        disabled={isViewOnly}
       />
       <input
         type="hidden"
