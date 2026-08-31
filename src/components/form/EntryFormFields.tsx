@@ -120,7 +120,7 @@ const TaskFields = ({
   const slots = useLiveQuery(getAllTimeSlots);
   const [autoSortForm, setAutoSortForm] = useState(data?.isSortable ?? false);
   const [isBusy, setIsBusy] = useState(data?.isBusy ?? true);
-  
+
   return (
     <>
       <FormInput
@@ -131,12 +131,7 @@ const TaskFields = ({
         onChange={(e) => setIsBusy(autoSortForm ? true : e.target.checked)}
         disabled={isViewOnly}
       />
-      <input
-        type="hidden"
-        name="isSortable"
-        disabled={isViewOnly}
-        value="false"
-      />
+      <input type="hidden" name="isSortable" disabled={isViewOnly} value="false" />
       <FormInput
         label="Auto Sort?"
         type="checkbox"
@@ -167,9 +162,7 @@ const TaskFields = ({
         <FormSelect
           label="Duration"
           name="duration"
-          defaultSelected={
-            (data && fromISODuration(data.duration)) ?? 25
-          }
+          defaultSelected={(data && fromISODuration(data.duration)) ?? 25}
           options={durationOptions}
           {...common}
         />
@@ -209,10 +202,7 @@ const TaskFields = ({
             label="Can be started on"
             type="datetime-local"
             name="startDate"
-            defaultValue={
-              data?.startDate ??
-              dateNow.toPlainDateTime().toString({ smallestUnit: "minutes" })
-            }
+            defaultValue={data?.startDate ?? dateNow.toPlainDateTime().toString({ smallestUnit: "minutes" })}
             {...common}
           />
           <FormInput
@@ -220,10 +210,7 @@ const TaskFields = ({
             type="datetime-local"
             name="dueDate"
             defaultValue={
-              data?.dueDate ??
-              dateNow
-                .toPlainDateTime({ hour: 23, minute: 59 })
-                .toString({ smallestUnit: "minutes" })
+              data?.dueDate ?? dateNow.toPlainDateTime({ hour: 23, minute: 59 }).toString({ smallestUnit: "minutes" })
             }
             {...common}
           />
@@ -235,38 +222,22 @@ const TaskFields = ({
 
 const fromISODuration = (duration: string) => {
   const iso = z.object({ duration: z.iso.duration() });
-  const x = iso.safeParse({duration});
+  const x = iso.safeParse({ duration });
   if (x.error) return;
   return Temporal.Duration.from(x.data.duration).minutes;
 };
 
-export const EntryFormFields = ({
-  itemType,
-  data,
-  isViewOnly,
-}: EntryFormFieldsProps) => {
+export const EntryFormFields = ({ itemType, data, isViewOnly }: EntryFormFieldsProps) => {
   const dateNow = Temporal.Now.plainDateISO();
   const dateTimeNow = Temporal.Now.plainDateTimeISO().round("minute");
   const common = { required: true, disabled: isViewOnly };
 
   return (
     <>
-      <FormInput
-        label="Name"
-        type="text"
-        name="name"
-        defaultValue={data?.name}
-        {...common}
-      />
+      <FormInput label="Name" type="text" name="name" defaultValue={data?.name} {...common} />
 
       {itemType === "task" ? (
-        <TaskFields
-          data={data}
-          isViewOnly={false}
-          dateNow={dateNow}
-          dateTimeNow={dateTimeNow}
-          common={common}
-        />
+        <TaskFields data={data} isViewOnly={false} dateNow={dateNow} dateTimeNow={dateTimeNow} common={common} />
       ) : (
         <EventFields data={data} dateTimeNow={dateTimeNow} common={common} />
       )}

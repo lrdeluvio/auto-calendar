@@ -27,7 +27,7 @@ export const createEventFromForm = async (data: FormData): Promise<Result<string
   const { start, end } = parseResult.data;
   const saveResult = await addEntry({
     type: "event",
-    isBusy: true,
+    isBusy: data.get("isBusy") === "on" ? true : false,
     isDone: false,
     isSortable: false,
     isSorted: false,
