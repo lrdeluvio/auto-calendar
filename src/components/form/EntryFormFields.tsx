@@ -118,7 +118,7 @@ const TaskFields = ({
   common: any;
 }) => {
   const slots = useLiveQuery(getAllTimeSlots);
-  const [autoSortForm, setAutoSortForm] = useState(data?.isSortable ?? false);
+  const [autoSortForm, setAutoSortForm] = useState(data?.isSortable ?? true);
   const [isBusy, setIsBusy] = useState(data?.isBusy ?? true);
 
   return (
@@ -231,7 +231,7 @@ export const EntryFormFields = ({ itemType, data, isViewOnly }: EntryFormFieldsP
   const dateNow = Temporal.Now.plainDateISO();
   const dateTimeNow = Temporal.Now.plainDateTimeISO().round("minute");
   const common = { required: true, disabled: isViewOnly };
-
+  
   return (
     <>
       <FormInput label="Name" type="text" name="name" defaultValue={data?.name} {...common} />
@@ -251,7 +251,7 @@ export const EntryFormFields = ({ itemType, data, isViewOnly }: EntryFormFieldsP
       <input type="color" name="color" defaultValue={data?.color ?? "blue"} />
 
       <label htmlFor="notes">Notes</label>
-      <textarea name="notes" id="notes" defaultValue={data?.notes} {...common}></textarea>
+      <textarea name="notes" id="notes" defaultValue={data?.notes}></textarea>
     </>
   );
 };
