@@ -29,7 +29,7 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
   return (
     <>
       <button
-        style={{ backgroundColor: "red", width: "100%", height: "100%" }}
+        style={{ backgroundColor: event.color, width: "100%", height: "100%" }}
         onClick={() => {
           NiceModal.show(EditEntryModal, { entry: event });
         }}

@@ -24,6 +24,7 @@ const baseTaskEntryFormSchema = z.object({
     .transform((d) => Temporal.Duration.from({ minutes: d })),
 
   isBusy: z.coerce.boolean(),
+  color: z.string(),
 });
 
 const taskEntryFormSchema = z.discriminatedUnion("isSortable", [
@@ -96,6 +97,7 @@ export const updateTaskFromForm = async (data: FormData, id: string): Promise<Re
       minutes: Number(data.get("bufferAfter")),
     }).toString(),
     notes: String(data.get("notes")),
+    color: String(data.get("color")),
     ...(data.get("duration")
       ? {
           duration: Temporal.Duration.from({

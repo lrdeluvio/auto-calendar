@@ -248,6 +248,8 @@ export const EntryFormFields = ({ itemType, data, isViewOnly }: EntryFormFieldsP
         common={common}
       />
 
+      <input type="color" name="color" defaultValue={data?.color ?? "blue"} />
+
       <label htmlFor="notes">Notes</label>
       <textarea name="notes" id="notes" defaultValue={data?.notes} {...common}></textarea>
     </>

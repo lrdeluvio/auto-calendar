@@ -50,6 +50,7 @@ export const fromEntryDbModel = (
     bufferAfter: Temporal.Duration.from(event.bufferAfter),
     startDate: Temporal.PlainDateTime.from(event.startDate),
     dueDate: Temporal.PlainDateTime.from(event.dueDate),
+    color: event.color,
   };
 
   const start = event.start ? Temporal.PlainDateTime.from(event.start) : null;

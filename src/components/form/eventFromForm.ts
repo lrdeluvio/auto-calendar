@@ -18,6 +18,8 @@ const eventEntryFormModel = z.object({
     .number()
     .min(0)
     .transform((d) => Temporal.Duration.from({ minutes: d })),
+  
+  color: z.string(),
 });
 
 export const createEventFromForm = async (data: FormData): Promise<Result<string, string>> => {

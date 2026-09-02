@@ -36,6 +36,8 @@ export const entryDbModel = z.object({
 
   startDate: z.iso.datetime(),
   dueDate: z.iso.datetime(),
+
+  color: z.string(),
 });
 
 export type EntryDbModel = z.infer<typeof entryDbModel>;

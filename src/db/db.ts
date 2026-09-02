@@ -13,6 +13,6 @@ db.version(1).stores({
     end, isBusy, isDone, 
     isSortable, isSorted,
     duration, weight, slotId, 
-    buffer, startDate, dueDate
+    buffer, startDate, dueDate, color
   `,
 });

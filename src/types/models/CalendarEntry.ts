@@ -19,6 +19,8 @@ interface BaseEntry {
 
   startDate: Temporal.PlainDateTime;
   dueDate: Temporal.PlainDateTime;
+
+  color: string;
 }
 
 export type CalendarEntryType = "event" | "task"
