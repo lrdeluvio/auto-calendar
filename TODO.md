@@ -3,7 +3,6 @@
 - [x] buttons for calendar navigation
 - [x] make tasks actually completable
   - [x] BUG: events also have the checkboxes for completables
-- [ ] custom event colors
 - [x] implement the buffer feature
 - [x] make calendar items clickable, allowing for editing
   - it will be basically using the create new task/event modal
@@ -15,10 +14,9 @@
         setting start and end
 - [x] when completing a task early, they should be moved to the curren time
   - (with end being the current time)
-- [ ] make calendar item duplicatable
 - [ ] allow the dialogs to be closable when clicking outside the dialog
 - [x] allow items to de deletable
-- [ ] implement the update event forms function
+- [x] implement the update event forms function
 - [ ] find out how repeating calendar items would work.
   - maybe we give items a recuranceId that is shared for the repeating items.
   - then an order so we know which comes first (for when we need to edit them, so only)
@@ -41,9 +39,8 @@
 - Must have something to do in scheduleTasksInDate, maybe I need to filter the busyEvents per scheduleTasksInDateInSlotCall
   Ex: today is 7, 6:00, if theres a busy event in 09 6:00-6:30, that time won't be abailable to 08
 - [x] refactor names for consistency!!
-- [ ] add a isBusy toggle on events
+- [x] add a isBusy toggle on events
 - [x] add default value on the form
-- [ ] branded types for readability: https://gemini.google.com/app/d444b8e5d85bc859
 - [x] BUG: seems that tasks saving is not working properly and displays missing weight and buffer
 - [ ] BUG: buffer BEFORE not working.
 - [ ] Add check for dates, like end > start, etc.
@@ -53,4 +50,46 @@ FLOW:
 db(EntryDbModel) => components(EntryDbModel) => Forms(primive) => logic(Entry) => Forms(primitive)
 _/
 
-react-big-calendar's Calendar component is causing this warning: Your app (or one of its dependencies) is using an outdated JSX transform. Update to the modern JSX transform for faster performance: https://react.dev/link/new-jsx-transform
+- [x] Theres a now a bug on the sorting algorithm, i think it has something to do with
+the start and due dates, because before it only receives datetime, with the time being 00
+but now it receives datetime where the time can be any time. so check that. but first check whats
+actually getting received by the algorithm (in agenda and sortTask)
+
+- [ ] add zod validation on dates (like start > end check) on event/taskFromForm
+- [x] now work on reimpleneting the clickable events on the calendar,
+  use NiceModals!!
+- [x] bug: auto tasks still being sorted inside manual tasks (probably because it has isBusy = false)
+
+# ENTITIES
+## Core (Sorting Algorithm)
+- CalendarEvent
+- CalendarTask
+- CalendarTaskUnscheduled
+- Entry = CalendarEvent | CalendarTask | CalendarTaskUnscheduled
+  - Uses Temporal object for dates
+## DB
+- EntryDBModel
+  - Uses primative types like strings, and booleans
+## Form
+- EntryFormModel
+  - Because not everything translate properly in input elements
+    Like a checkbox will return "on" or nothing at all, you want ISO duration but you get plain numbers.
+
+- [x] creating events and turning off isBusy enables it anyway
+  I thought the problem was the input element, and it was. Turns out I have separate isBusy for 
+  events and tasks. It was the problem, but theres something else that's causing it.
+  sorting algo might have something to do with it.
+- [x] custom event colors
+- [x] make calendar item duplicatable
+- [ ] BUG: old entries (not from the current week, are not being shown.)
+  possible fix: on the Calendar component, I should add all the previous events from the db
+- [ ] BUG: if a task is sorted near the currentTime, and it is after a busy event, if we
+  give it a bufferAfter, it will ignore the busy event in terms of adding the buffer.
+  EX: currenTime = 2:00
+      task = 2:00-2:15
+      event = 2:20-2:25
+      if we give the task a bufferAfter of 20 minutes, it would not be moved, and instead
+      it's buffer will go straight through the event. I think. must be an algirithm bug.
+- [ ] BUG: the finish task early function thingy is a bit buggy, like i keep having to reload sometimes
+  I think it have something to do with the current time being used. Maybe there is some way to sync it with
+  the calendar?
