@@ -6,10 +6,11 @@ import { EntryForm } from "../form/EntryForm";
 import { EntryFormFields } from "../form/EntryFormFields";
 import { createEventFromForm } from "../form/eventFromForm";
 import { createTaskFromForm } from "../form/taskFromForm";
+import type { EntryDbModel } from "../../db/types";
 
-export const CreateEntryModal = NiceModal.create(() => {
+export const CreateEntryModal = NiceModal.create(({ entry }: { entry?: EntryDbModel }) => {
   const modal = useModal();
-  const [itemType, setItemType] = useState<CalendarEntryType>("event");
+  const [itemType, setItemType] = useState<CalendarEntryType>(entry?.type ?? "event");
 
   return (
     <Modal>
@@ -35,23 +36,20 @@ export const CreateEntryModal = NiceModal.create(() => {
         required
       />
 
-      {itemType === "task" ? (
-        <EntryForm
-          mode="create"
-          createFormAction={(formData) => createTaskFromForm(formData)}
-          onOk={() => modal.remove()}
-        >
-          <EntryFormFields isViewOnly={false} itemType={"task"} />
-        </EntryForm>
-      ) : (
-        <EntryForm
-          mode="create"
-          createFormAction={(formData) => createEventFromForm(formData)}
-          onOk={() => modal.remove()}
-        >
-          <EntryFormFields isViewOnly={false} itemType={"event"} />
-        </EntryForm>
-      )}
+      <EntryForm
+        mode="create"
+        createFormAction={(formData) =>
+          itemType === "task" ? createTaskFromForm(formData) : createEventFromForm(formData)
+        }
+        onOk={() => modal.remove()}
+      >
+        {entry ? (
+          <EntryFormFields isViewOnly={false} itemType={itemType === "task" ? "task" : "event"} data={entry} />
+        ) : (
+          <EntryFormFields isViewOnly={false} itemType={itemType === "task" ? "task" : "event"} />
+        )}
+      </EntryForm>
+
       <button onClick={() => modal.hide()}>Close</button>
     </Modal>
   );
