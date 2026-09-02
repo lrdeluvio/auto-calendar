@@ -33,7 +33,7 @@ export const EntryForm = (props: EntryFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }}>
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }} key={crypto.randomUUID()}>
       {children}
       <button type="submit">{mode === "create" ? "Create" : "Update"}</button>
     </form>
