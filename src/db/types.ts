@@ -1,4 +1,3 @@
-import type { Weight } from "../types/common";
 import * as z from "zod";
 
 export const timeslotDbModel = z.object({

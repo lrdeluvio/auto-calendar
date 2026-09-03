@@ -8,11 +8,9 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "./db/db";
 import { getWeekBounds } from "./utils/getWeekBounds";
 import type { EntryDbModel } from "./db/types";
-import { ViewUnsortedTasksButton } from "./components/ViewUnsortedTasks";
 import { CreateEntryButton } from "./components/button/CreateEntryButton";
 import { SortTasksButton } from "./components/SortTasksButton";
 import { CustomEvent } from "./components/common/CustomEvent";
-import { DeleteEntryButton } from "./components/DeleteEntryButton";
 
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
