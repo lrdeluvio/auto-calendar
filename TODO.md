@@ -100,10 +100,13 @@ actually getting received by the algorithm (in agenda and sortTask)
   we pass everything to the form, including the original's id, so in theory the clone is using 
   the original's id. Though at the same time, when creating new entries, we are assigning
   them new ids.
-- [ ] the start on dateTime is not working as intended, specifically the time part. It seems that 
+- [x] the start on dateTime is not working as intended, specifically the time part. It seems that 
   it won't be included on the tasks to sort. I think the problem is in sortTasks()
   - I think this is talking about the can be started on input? i forgot.
 - [ ] the sorting algorithm is buggy in general!
   I have task A which is in morning slot with normal weight, then another with
   task B which is in all day with normal weight, but then if i change the weight of task B
   to high, it will then get rid of task B, making it unsorted.
+- [ ] reimplement the view unsorted tasks modal
+- [ ] make the duration input maybe just numbers OR a combination of input number and input dropdown.
+- [ ] BUG: updating weight to low is not doing anything. updating to high or ASAP works fine though.

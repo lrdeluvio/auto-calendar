@@ -36,7 +36,7 @@ export const agenda = (
     const [date, ...rest] = dates;
     if (!date)
       return {
-        sortedTasks: scheduled ?? [],
+        sortedTasks: scheduled,
         queue: allTasks,
       };
 
@@ -46,6 +46,12 @@ export const agenda = (
         (task.startDate.toPlainDate().equals(date) && task.dueDate.toPlainDate().equals(date))
       );
     });
+
+    if (tasksInDate.length == 0)
+      return {
+        sortedTasks: scheduled,
+        queue: allTasks,
+      };
 
     const scheduleTasksInDateInDate = scheduleTasksInDate(
       tasksInDate,
