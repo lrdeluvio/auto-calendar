@@ -7,13 +7,16 @@ import { EditEntryModal } from "../modals/EditEntryModal";
 export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
   const handleToggle = async (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
     const currentDateTime = Temporal.Now.plainDateTimeISO().round("minute");
-    const isEventAftercurrentDateTime =
-      Temporal.PlainDateTime.compare(Temporal.PlainDateTime.from(event.start), currentDateTime) <= 0;
+    const start = Temporal.PlainDateTime.from(event.start).round("minute");
+    const end = Temporal.PlainDateTime.from(event.end).round("minute");
+
+    const isEventPastCurrDateTime = Temporal.PlainDateTime.compare(start, currentDateTime) <= 0;
+    const isCurrDateTimeInEvent = isEventPastCurrDateTime && Temporal.PlainDateTime.compare(currentDateTime, end) <= 0;
 
     try {
       await db.events.update(event.id, {
         isDone: e.target.checked,
-        ...(isEventAftercurrentDateTime
+        ...(isEventPastCurrDateTime || isCurrDateTimeInEvent
           ? {
               end: currentDateTime.toString(),
               start: currentDateTime.subtract(event.duration).toString(),

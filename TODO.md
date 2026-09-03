@@ -42,7 +42,7 @@
 - [x] add a isBusy toggle on events
 - [x] add default value on the form
 - [x] BUG: seems that tasks saving is not working properly and displays missing weight and buffer
-- [ ] BUG: buffer BEFORE not working.
+- [x] BUG: buffer BEFORE not working.
 - [ ] Add check for dates, like end > start, etc.
 
 /_
@@ -90,6 +90,20 @@ actually getting received by the algorithm (in agenda and sortTask)
       event = 2:20-2:25
       if we give the task a bufferAfter of 20 minutes, it would not be moved, and instead
       it's buffer will go straight through the event. I think. must be an algirithm bug.
-- [ ] BUG: the finish task early function thingy is a bit buggy, like i keep having to reload sometimes
+- [x] BUG: the finish task early function thingy is a bit buggy, like i keep having to reload sometimes
   I think it have something to do with the current time being used. Maybe there is some way to sync it with
   the calendar?
+  - [x] BUG: it won't even work if there is an event above it, i think.
+  I think it's more of tasks being AFTER the current time, tasks BEFORE the current time works fine.
+- [ ] BUG: on creating tasks, setting weight to low makes the create button do nothing.
+- [ ] BUG: I just realized this now, idk if it is a bug yet though, so when we clone an entry,
+  we pass everything to the form, including the original's id, so in theory the clone is using 
+  the original's id. Though at the same time, when creating new entries, we are assigning
+  them new ids.
+- [ ] the start on dateTime is not working as intended, specifically the time part. It seems that 
+  it won't be included on the tasks to sort. I think the problem is in sortTasks()
+  - I think this is talking about the can be started on input? i forgot.
+- [ ] the sorting algorithm is buggy in general!
+  I have task A which is in morning slot with normal weight, then another with
+  task B which is in all day with normal weight, but then if i change the weight of task B
+  to high, it will then get rid of task B, making it unsorted.
