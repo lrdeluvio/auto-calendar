@@ -103,7 +103,7 @@ actually getting received by the algorithm (in agenda and sortTask)
 - [x] the start on dateTime is not working as intended, specifically the time part. It seems that 
   it won't be included on the tasks to sort. I think the problem is in sortTasks()
   - I think this is talking about the can be started on input? i forgot.
-- [ ] the sorting algorithm is buggy in general!
+- [x] the sorting algorithm is buggy in general!
   I have task A which is in morning slot with normal weight, then another with
   task B which is in all day with normal weight, but then if i change the weight of task B
   to high, it will then get rid of task B, making it unsorted.

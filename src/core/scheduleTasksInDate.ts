@@ -37,20 +37,8 @@ export const scheduleTasksInDate = (
       );
     console.log("Resolving slot conflict...");
     const sorted: TasksSchedule = areSlotsOverlapping
-      ? resolveSlotTaskConflicts(
-          currentSlot,
-          nextSlot,
-          queuedTasks,
-          busyEntries,
-          date,
-        )
-      : scheduleTasksInSlot(
-          tasks,
-          busyEntries,
-          currentSlot.start,
-          currentSlot.end,
-          date,
-        );
+      ? resolveSlotTaskConflicts(currentSlot, nextSlot, queuedTasks.filter((t) => t.slotId === currentSlot.id || nextSlot.id), busyEntries, date)
+      : scheduleTasksInSlot(tasks, busyEntries, currentSlot.start, currentSlot.end, date);
 
     console.log("Items in slot scheduled. Scheduling next slot.");
     return scheduleTasksInDateRecursion(

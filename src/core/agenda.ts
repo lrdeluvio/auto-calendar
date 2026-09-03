@@ -40,18 +40,19 @@ export const agenda = (
         queue: allTasks,
       };
 
-    const tasksInDate = allTasks.filter((task) => {
-      return (
-        Temporal.PlainDateTime.compare(task.startDate, date) <= 0 ||
-        (task.startDate.toPlainDate().equals(date) && task.dueDate.toPlainDate().equals(date))
+    const tasksInDate = allTasks.filter(
+      (task) =>
+        Temporal.PlainDateTime.compare(task.startDate, date.toPlainDateTime("00:00")) <= 0 ||
+        (task.startDate.toPlainDate().equals(date) && task.dueDate.toPlainDate().equals(date)),
       );
-    });
 
-    if (tasksInDate.length == 0)
+    if (allTasks.length === 0) {
+      console.log("No more tasks to sort in the agenda.");
       return {
         sortedTasks: scheduled,
         queue: allTasks,
       };
+    }
 
     const scheduleTasksInDateInDate = scheduleTasksInDate(
       tasksInDate,
