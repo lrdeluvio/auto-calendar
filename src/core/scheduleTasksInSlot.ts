@@ -38,8 +38,15 @@ export const scheduleTasksInSlot = (
     }
 
     // - [ ] I should add a isOverDue property and use Temporal.Now.PlaneDateISO() instead of date
-    
-    if (Temporal.PlainDateTime.compare(task.dueDate, date) === -1) {
+    if (Temporal.PlainDateTime.compare(task.startDate, date.toPlainDateTime(currentTime)) === 1) {
+      console.log("Task can't be started yet");
+      if (remainingTasks.length === 0) return schedule([task], task.startDate.toPlainTime(), sortedTasks, overDueTasks);
+
+      // move task inside remainigTasks after remainingTasks[0]
+      return schedule(remainingTasks.toSpliced(1, 0, task), currentTime, sortedTasks, overDueTasks);
+    }
+
+    if (Temporal.PlainDateTime.compare(task.dueDate, date.toPlainDateTime(currentTime)) === -1) {
       console.log("Task is overdue. Skipping and scheduling next task.");
       return schedule(remainingTasks, currentTime, sortedTasks, [
         ...overDueTasks,
