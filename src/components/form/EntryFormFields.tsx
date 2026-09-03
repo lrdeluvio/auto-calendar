@@ -23,10 +23,10 @@ const durationOptions = [
 ];
 
 const weightOptions = [
-  { text: "Low", weight: 0 },
-  { text: "Normal", weight: 1 },
-  { text: "High", weight: 2 },
-  { text: "Do ASAP", weight: 3 },
+  { text: "Low", weight: 1 },
+  { text: "Normal", weight: 2 },
+  { text: "High", weight: 3 },
+  { text: "Do ASAP", weight: 4 },
 ];
 
 interface EntryFormFieldsProps {

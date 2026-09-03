@@ -95,7 +95,7 @@ actually getting received by the algorithm (in agenda and sortTask)
   the calendar?
   - [x] BUG: it won't even work if there is an event above it, i think.
   I think it's more of tasks being AFTER the current time, tasks BEFORE the current time works fine.
-- [ ] BUG: on creating tasks, setting weight to low makes the create button do nothing.
+- [x] BUG: on creating tasks, setting weight to low makes the create button do nothing.
 - [ ] BUG: I just realized this now, idk if it is a bug yet though, so when we clone an entry,
   we pass everything to the form, including the original's id, so in theory the clone is using 
   the original's id. Though at the same time, when creating new entries, we are assigning
