@@ -10,9 +10,9 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
     const start = Temporal.PlainDateTime.from(event.start).round("minute");
     const end = Temporal.PlainDateTime.from(event.end).round("minute");
 
-    const isEventPastCurrDateTime = Temporal.PlainDateTime.compare(start, currentDateTime) <= 0;
-    const isCurrDateTimeInEvent = isEventPastCurrDateTime && Temporal.PlainDateTime.compare(currentDateTime, end) <= 0;
-
+    const isEventPastCurrDateTime = Temporal.PlainDateTime.compare(currentDateTime, start) <= 0;
+    const isCurrDateTimeInEvent = Temporal.PlainDateTime.compare(currentDateTime, start) >= 0 && Temporal.PlainDateTime.compare(currentDateTime, end) <= 0;
+  
     try {
       await db.events.update(event.id, {
         isDone: e.target.checked,
