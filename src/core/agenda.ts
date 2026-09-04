@@ -14,7 +14,7 @@ export const agenda = (
   startDate: Temporal.PlainDate,
   endDate: Temporal.PlainDate,
   tasksToSort: CalendarTaskUnscheduled[],
-  busyEvents: CalendarEntry[],
+  busyEntries: CalendarEntry[],
   timeslots: TimeSlot[],
 ): TasksSchedule => {
   const scheduleTasksInDateInAgenda = (
@@ -24,13 +24,22 @@ export const agenda = (
     scheduled: CalendarTask[] = [],
   ): TasksSchedule => {
     const [date, ...rest] = dates;
-    if (!date)
+    if (!date) {
+      console.log("No more dates to go through.");
       return {
         sortedTasks: scheduled,
         queue: toSort,
       };
+    }
 
-      
+    if (toSort.length === 0) {
+      console.log("No more tasks to sort in the agenda.");
+      return {
+        sortedTasks: scheduled,
+        queue: toSort,
+      };
+    }
+
     /* 
       Tasks whose startDate has passed, but whose dueDate has not yet passed.
       start <= endOfDay && due >= startOfDay
@@ -41,36 +50,26 @@ export const agenda = (
         Temporal.PlainDateTime.compare(task.dueDate, date.toPlainDateTime("00:00")) >= 0,
     );
 
-    if (toSort.length === 0) {
-      console.log("No more tasks to sort in the agenda.");
-      return {
-        sortedTasks: scheduled,
-        queue: toSort,
-      };
-    }
+    console.group("Scheduling items in %s per slot", date.toString());
+    console.log("Tasks to be sorted: ");
+    console.table(tasksInDate, ["id", "name", "duration", "weight", "slotId", "startDate", "dueDate"]);
 
-    console.group("Scheduling items in", date.toString(), "per slot");
-    console.log("Tasks to be sorted: ", tasksInDate);
-    const scheduleTasksInDateInDate = scheduleTasksInDate(
+    const scheduledTasks = scheduleTasksInDate(
       tasksInDate,
-      busyEvents.filter((e) => e.start && date.equals(e.start?.toPlainDate())),
+      busyEntries.filter((e) => e.start && date.equals(e.start.toPlainDate())),
       timeSlots,
       date,
     );
 
-    console.log("Finished scheduling tasks per slot in ", date.toString());
-    const flatten = scheduleTasksInDateInDate.reduce<CalendarTask[]>((acc, curr) => [...acc, ...curr.sortedTasks], []);
+    console.log("Finished scheduling tasks per slot in %s", date.toString());
     console.groupEnd();
-    const queue = toSort.filter((task) => !flatten.some((task2) => task.id === task2.id));
 
-    return scheduleTasksInDateInAgenda(rest, queue, timeSlots, [...scheduled, ...flatten]);
+    const sortedTasks = scheduledTasks.flatMap((t) => t.sortedTasks);
+    const queue = scheduledTasks.flatMap((t) => t.queue);
+
+    return scheduleTasksInDateInAgenda(rest, queue, timeSlots, [...scheduled, ...sortedTasks]);
   };
 
-  console.log(
-    "%cScheduling tasks from %s to %s",
-    "font-size: 16px; font-weight: bold;",
-    startDate.toString(),
-    endDate.toString(),
-  );
+  console.log("%cScheduling tasks from %s to %s", "font-size: 16px;", startDate.toString(), endDate.toString());
   return scheduleTasksInDateInAgenda(eachDayOfInterval(startDate, endDate), tasksToSort, timeslots);
 };
