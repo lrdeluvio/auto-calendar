@@ -22,13 +22,14 @@ export const agenda = (
     toSort: CalendarTaskUnscheduled[],
     timeSlots: TimeSlot[],
     scheduled: CalendarTask[] = [],
+    queue: CalendarTaskUnscheduled[] = [],
   ): TasksSchedule => {
     const [date, ...rest] = dates;
     if (!date) {
       console.log("No more dates to go through.");
       return {
         sortedTasks: scheduled,
-        queue: toSort,
+        queue: queue,
       };
     }
 
@@ -36,7 +37,7 @@ export const agenda = (
       console.log("No more tasks to sort in the agenda.");
       return {
         sortedTasks: scheduled,
-        queue: toSort,
+        queue: queue,
       };
     }
 
@@ -65,9 +66,20 @@ export const agenda = (
     console.groupEnd();
 
     const sortedTasks = scheduledTasks.flatMap((t) => t.sortedTasks);
-    const queue = scheduledTasks.flatMap((t) => t.queue);
+    const sortedQueue = scheduledTasks.flatMap((t) => t.queue);
+   
 
-    return scheduleTasksInDateInAgenda(rest, queue, timeSlots, [...scheduled, ...sortedTasks]);
+    /*
+      toSort: filter outs the tasks from sortedTasks
+      queue: filter outs the tasks that can still be sorted in a different day
+    */
+    return scheduleTasksInDateInAgenda(
+      rest,
+      toSort.filter((t) => !sortedTasks.some((v) => v.id === t.id)),
+      timeSlots,
+      [...scheduled, ...sortedTasks],
+      [...queue, ...sortedQueue.filter((t) => t.dueDate.equals(date))],
+    );
   };
 
   console.log("%cScheduling tasks from %s to %s", "font-size: 16px;", startDate.toString(), endDate.toString());
