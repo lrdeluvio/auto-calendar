@@ -31,10 +31,14 @@ export const agenda = (
       };
 
       
+    /* 
+      Tasks whose startDate has passed, but whose dueDate has not yet passed.
+      start <= endOfDay && due >= startOfDay
+    */
     const tasksInDate = toSort.filter(
       (task) =>
-        Temporal.PlainDateTime.compare(task.startDate, date.toPlainDateTime("00:00")) <= 0 ||
-        (task.startDate.toPlainDate().equals(date) && task.dueDate.toPlainDate().equals(date)),
+        Temporal.PlainDateTime.compare(task.startDate, date.toPlainDateTime("23:59")) <= 0 &&
+        Temporal.PlainDateTime.compare(task.dueDate, date.toPlainDateTime("00:00")) >= 0,
     );
 
     if (toSort.length === 0) {
