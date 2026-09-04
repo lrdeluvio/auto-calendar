@@ -17,23 +17,36 @@ export const scheduleTasksInDate = (
   ) => {
     const [currentSlot, nextSlot, ...slots] = timeSlots;
     if (!currentSlot) return sortedTasks;
-    const tasks = queuedTasks.filter((t) => t.slotId === currentSlot.id);
-    console.log("Scheduling in slot: ", currentSlot.id);
+    const toSort = queuedTasks.filter((t) => t.slotId === currentSlot.id);
 
-    const areSlotsOverlapping =
+    if (toSort.length === 0)
+      return scheduleTasksInDateRecursion(busyEntries, [...(nextSlot ? [nextSlot] : []), ...slots], sortedTasks);
+
+    console.group("Scheduling in slot %s: %s", currentSlot.name, currentSlot.id);
+    console.log("Tasks to sort: ");
+    console.table(toSort, ["id", "name", "duration", "weight", "startDate", "dueDate"]);
+
+    const doesNextSlotOverlapCurrent =
       nextSlot !== undefined && Temporal.PlainTime.compare(nextSlot.start, currentSlot.end) === -1;
 
-    if (areSlotsOverlapping) {
-      console.log("Slot: ", currentSlot.name, " and", nextSlot?.name, "are Overlapping");
-      console.log("Resolving slot conflict...");
-    }
+    if (doesNextSlotOverlapCurrent) console.log("Slot: ", currentSlot.name, " and", nextSlot?.name, "are Overlapping");
 
-    const sorted: TasksSchedule = areSlotsOverlapping
-      ? resolveSlotTaskConflicts(currentSlot, nextSlot, queuedTasks.filter((t) => t.slotId === currentSlot.id || nextSlot.id), busyEntries, date)
-      : scheduleTasksInSlot(tasks, busyEntries, currentSlot.start, currentSlot.end, date);
+    console.group(doesNextSlotOverlapCurrent ? "Resolving slot conflict..." : "Sorting tasks");
+    const sorted: TasksSchedule = doesNextSlotOverlapCurrent
+      ? resolveSlotTaskConflicts(
+          currentSlot,
+          nextSlot,
+          queuedTasks.filter((t) => t.slotId === currentSlot.id || t.slotId === nextSlot.id),
+          busyEntries,
+          date,
+        )
+      : scheduleTasksInSlot(toSort, busyEntries, currentSlot.start, currentSlot.end, date);
+    console.groupEnd();
 
-    if (areSlotsOverlapping) console.log("Slot conflict resolved.")
-    console.log("Items in slot scheduled. Scheduling next slot.");
+    if (doesNextSlotOverlapCurrent) console.log("Slot conflict resolved. Scheduling next slot.");
+    else console.log("Items in slot scheduled. Scheduling next slot.");
+    console.groupEnd();
+    
     return scheduleTasksInDateRecursion(
       [...busyEntries, ...sorted.sortedTasks],
       [...(nextSlot ? [nextSlot] : []), ...slots],
