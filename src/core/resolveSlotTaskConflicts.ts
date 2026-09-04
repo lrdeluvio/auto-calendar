@@ -10,7 +10,8 @@ export const resolveSlotTaskConflicts = (
   busyEntries: CalendarEntry[],
   date: Temporal.PlainDate,
 ): TasksSchedule => {
-  const merge = scheduleTasksInSlot(tasks, busyEntries, timeslotA.start, timeslotB.end, date);
+  const maxTimeslotEnd = Temporal.PlainTime.compare(timeslotA.end, timeslotB.end) === 1 ? timeslotA.end : timeslotB.end
+  const merge = scheduleTasksInSlot(tasks, busyEntries, timeslotA.start, maxTimeslotEnd, date);
   return {
     sortedTasks: merge.sortedTasks.filter((t) => t.slotId === timeslotA.id),
     queue: merge.queue.filter((t) => t.slotId === timeslotA.id),
