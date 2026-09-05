@@ -68,7 +68,6 @@ export const agenda = (
     const sortedTasks = scheduledTasks.flatMap((t) => t.sortedTasks);
     const sortedQueue = scheduledTasks.flatMap((t) => t.queue);
    
-
     /*
       toSort: filter outs the tasks from sortedTasks
       queue: filter outs the tasks that can still be sorted in a different day
@@ -78,7 +77,7 @@ export const agenda = (
       toSort.filter((t) => !sortedTasks.some((v) => v.id === t.id)),
       timeSlots,
       [...scheduled, ...sortedTasks],
-      [...queue, ...sortedQueue.filter((t) => t.dueDate.equals(date))],
+      [...queue, ...sortedQueue.filter((t) => t.dueDate.toPlainDate().equals(date))],
     );
   };
 
