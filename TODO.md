@@ -109,4 +109,51 @@ actually getting received by the algorithm (in agenda and sortTask)
   to high, it will then get rid of task B, making it unsorted.
 - [ ] reimplement the view unsorted tasks modal
 - [ ] make the duration input maybe just numbers OR a combination of input number and input dropdown.
-- [ ] BUG: updating weight to low is not doing anything. updating to high or ASAP works fine though.
+- [ ] BUG: updating weight to low is not doing anything. updating to high or ASAP works fine though. I mean it DOES work, idk why I wrote this. Might have inadvertandly fixed it idk.
+- [ ] BUG: the cloning entries still has a few bugs
+
+USE THE DEBUGGER, since u can just export your calendar data here in json, via the plugin
+just use that
+
+- [ ] BUG: I think the can be started, specifically the time part is not working properly.
+  THEORY: I think it is, but only one task at a time of the same start time???
+- [ ] BUG: So I have a whole bunch of tasks right? set on whole day, so they start at 6:00
+  the I create a morning task, and it was assigned at 11AM even though the slots cutoff is 9AM
+  - still happening.
+  ohhhhhhhhhh i think its ebcause of the conflict resolver! since we used the start of slot a
+  and the max(end of slot a or b), if our end is slob b (which is higher) tasks from slot a
+  can be sorted outside of its range. 
+  we can;t just use slot a's end all the time because then there will be a gap for the tasks
+  of slot b.
+  so we either: add an options object parameter in scheduleTasksInSlot, something like 
+  resolveConflict: boolean, and if it is true, a check will be triggered to see 
+  wait hmmmm idkk, maybe we can just oohhhh i know we can just duplicate scheduleTasksInSlot
+  but modify it so that there is a check to see if slotA's task will make it past its og end.
+  and then to avoid code duplication, we should make each part of scheduleTasksInSLot into functions!!!
+- [ ] in scheduleTaskInSlot:
+  maybe this should't immediately stop the scheduuling?
+  because what if there are still tasks that can fit on the remaining time?
+  something like this:
+  ```
+  const durationLeftInSlot = durationOfSlot - currentTime
+  const tasksFitInDuration = remainingTasks.map((t) => t.duration <= durationLeftInSlot)
+  schedule(tasksFitInDuration, currentTime, sortedTasks, [...overdueTasks, currentTask, !tasksFitInDuration])
+  ````
+       
+
+-----
+# FEAURE IDEA
+A stress meter you can increase or decrease when creating tasks
+
+I can then create an algorithm that changes the sorting algorithm based on
+stress meter.
+
+There will be a couple of methods of handling tasks based on stess:
+Swallow the frog - stressful tasks first
+Easy tasks first
+Alternating between stressful and easy tasks
+
+------
+
+
+
