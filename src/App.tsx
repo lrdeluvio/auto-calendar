@@ -11,6 +11,7 @@ import type { EntryDbModel } from "./db/types";
 import { CreateEntryButton } from "./components/button/CreateEntryButton";
 import { SortTasksButton } from "./components/SortTasksButton";
 import { CustomEvent } from "./components/common/CustomEvent";
+import { ViewUnsortedTasksButton } from "./components/ViewUnsortedTasks";
 
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
@@ -46,7 +47,7 @@ function App() {
     <>
       <CreateEntryButton />
       <CreateTimeslotButton />
-      {/* <ViewUnsortedTasksButton></ViewUnsortedTasksButton> */}
+      <ViewUnsortedTasksButton></ViewUnsortedTasksButton>
       <SortTasksButton /> 
 
       <Calendar
