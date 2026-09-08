@@ -1,9 +1,5 @@
 import type { TasksSchedule } from "../types/common";
-import type {
-  CalendarEntry,
-  CalendarTask,
-  CalendarTaskUnscheduled,
-} from "../types/models/CalendarEntry";
+import type { CalendarEntry, CalendarTask, CalendarTaskUnscheduled } from "../types/models/CalendarEntry";
 
 export const scheduleTasksInSlot = (
   queuedTasks: CalendarTaskUnscheduled[],
@@ -19,7 +15,13 @@ export const scheduleTasksInSlot = (
       queue: queuedTasks,
     };
 
-  const sortedTasksByWeight = queuedTasks.toSorted((a, b) => b.weight - a.weight);
+  const sortedTasksByWeight = queuedTasks.toSorted((a, b) => {
+    if (a.weight !== b.weight) return b.weight - a.weight;
+
+    const dateRangeA = a.dueDate.since(a.startDate).days;
+    const dateRangeB = b.dueDate.since(b.startDate).days;
+    return dateRangeA - dateRangeB;
+  });
 
   /*
     if date is today and the start has already past, use the current time as start time,
@@ -119,7 +121,7 @@ export const scheduleTasksInSlot = (
       /**
        * const durationLeftInSlot = durationOfSlot - currentTime
        * const tasksFitInDuration = remainingTasks.map((t) => t.duration <= durationLeftInSlot)
-       * 
+       *
        * schedule(tasksFitInDuration, currentTime, sortedTasks, [...overdueTasks, currentTask, !tasksFitInDuration])
        */
 
