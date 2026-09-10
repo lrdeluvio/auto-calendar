@@ -1,5 +1,4 @@
-import type { TasksSchedule } from "../types/common";
-import type { CalendarEntry, CalendarTaskUnscheduled } from "../types/models/CalendarEntry";
+import type { CalendarEntry, CalendarTask, CalendarTaskUnscheduled } from "../types/models/CalendarEntry";
 import type { TimeSlot } from "../types/models/TimeSlot";
 import { scheduleTasksInSlot } from "./scheduleTasksInSlot";
 
@@ -9,11 +8,32 @@ export const resolveSlotTaskConflicts = (
   tasks: CalendarTaskUnscheduled[],
   busyEntries: CalendarEntry[],
   date: Temporal.PlainDate,
-): TasksSchedule => {
-  const maxTimeslotEnd = Temporal.PlainTime.compare(timeslotA.end, timeslotB.end) === 1 ? timeslotA.end : timeslotB.end
-  const merge = scheduleTasksInSlot(tasks, busyEntries, timeslotA.start, maxTimeslotEnd, date);
-  return {
-    sortedTasks: merge.sortedTasks.filter((t) => t.slotId === timeslotA.id),
-    queue: merge.queue.filter((t) => t.slotId === timeslotA.id),
+) => {
+  const sortedTasksByWeight = tasks.toSorted((a, b) => {
+    if (a.weight !== b.weight) return b.weight - a.weight;
+
+    const dateRangeA = a.dueDate.since(a.startDate).days;
+    const dateRangeB = b.dueDate.since(b.startDate).days;
+    return dateRangeA - dateRangeB;
+  });
+
+  const recursion = (
+    toSort: CalendarTaskUnscheduled[],
+    sorted: CalendarTask[] = [],
+    queue: CalendarTaskUnscheduled[] = [],
+  ) => {
+    const [task, ...rest] = toSort;
+    if (!task)
+      return {
+        sortedTasks: sorted.filter((t) => t.slotId === timeslotA.id),
+        queue: queue.filter((t) => t.slotId === timeslotA.id),
+      };
+    
+    const slot = task.slotId === timeslotA.id ? timeslotA : timeslotB;
+    const result = scheduleTasksInSlot([task], [...busyEntries, ...sorted], slot.start, slot.end, date);
+
+    return recursion(rest, [...sorted, ...result.sortedTasks], [...queue, ...result.queue]);
   };
+
+  return recursion(sortedTasksByWeight);
 };
