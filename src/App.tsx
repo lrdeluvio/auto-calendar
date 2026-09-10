@@ -33,10 +33,12 @@ function App() {
     2,
   );
 
-  const events = useLiveQuery(() =>
-    db.events
-      .filter((e) => (e.start ? e.start >= startOfWeek.toString() && e.start <= endOfWeek.toString() : false))
-      .toArray(),
+  const events = useLiveQuery(
+    () =>
+      db.events
+        .filter((e) => (e.start ? e.start >= startOfWeek.toString() && e.start <= endOfWeek.toString() : false))
+        .toArray(),
+    [startOfWeek, endOfWeek],
   );
 
   const handleNavigate = useCallback((newDate: Date) => {
