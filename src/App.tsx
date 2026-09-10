@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { parse, format, startOfWeek, getDay } from "date-fns";
@@ -24,33 +24,32 @@ const localizer = dateFnsLocalizer({
 
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { startOfWeek, endOfWeek } = getWeekBounds(
-    Temporal.PlainDate.from({
-      year: currentDate.getFullYear(),
-      month: currentDate.getMonth() + 1,
-      day: currentDate.getDate(),
-    }),
-    2,
+  const { startOfWeek, endOfWeek } = useMemo(
+    () =>
+      getWeekBounds(
+        Temporal.PlainDate.from({
+          year: currentDate.getFullYear(),
+          month: currentDate.getMonth() + 1,
+          day: currentDate.getDate(),
+        }),
+        2,
+      ),
+    [currentDate],
   );
 
   const events = useLiveQuery(
-    () =>
-      db.events
-        .filter((e) => (e.start ? e.start >= startOfWeek.toString() && e.start <= endOfWeek.toString() : false))
-        .toArray(),
+    () => db.events.filter((e) => e.start >= startOfWeek.toString() && e.start <= endOfWeek.toString()).toArray(),
     [startOfWeek, endOfWeek],
   );
 
-  const handleNavigate = useCallback((newDate: Date) => {
-    setCurrentDate(newDate);
-  }, []);
+  const handleNavigate = useCallback((newDate: Date) => setCurrentDate(newDate), []);
 
   return (
     <>
       <CreateEntryButton />
       <CreateTimeslotButton />
       <ViewUnsortedTasksButton></ViewUnsortedTasksButton>
-      <SortTasksButton /> 
+      <SortTasksButton />
 
       <Calendar
         events={events ? events : undefined}
