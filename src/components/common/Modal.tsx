@@ -11,8 +11,10 @@ export const Modal = ({ children }: { children: ReactNode }) => {
   }, [modal.visible]);
 
   return (
-    <dialog ref={dialogRef} onCancel={() => modal.hide()}>
-      {children}
+    <dialog ref={dialogRef} onCancel={() => modal.hide()} onClick={() => modal.hide()} style={{ padding: "0" }}>
+      <div style={{ padding: "1em" }} onClick={(e) => e.stopPropagation()}>
+        {children}
+      </div>
     </dialog>
   );
 };
