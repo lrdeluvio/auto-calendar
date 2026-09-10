@@ -11,8 +11,10 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
     const end = Temporal.PlainDateTime.from(event.end).round("minute");
 
     const isEventPastCurrDateTime = Temporal.PlainDateTime.compare(currentDateTime, start) <= 0;
-    const isCurrDateTimeInEvent = Temporal.PlainDateTime.compare(currentDateTime, start) >= 0 && Temporal.PlainDateTime.compare(currentDateTime, end) <= 0;
-  
+    const isCurrDateTimeInEvent =
+      Temporal.PlainDateTime.compare(currentDateTime, start) >= 0 &&
+      Temporal.PlainDateTime.compare(currentDateTime, end) <= 0;
+
     try {
       await db.events.update(event.id, {
         isDone: e.target.checked,
@@ -34,6 +36,7 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
       <button
         style={{ backgroundColor: event.color, width: "100%", height: "100%" }}
         onClick={() => {
+          console.log("clicked")
           NiceModal.show(EditEntryModal, { entry: event });
         }}
       >
@@ -48,7 +51,11 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
             onChange={handleToggle}
           />
         )}
-        <span>{event.isDone ? <s>{event.name}</s> : event.name}</span>
+        <span>
+          {event.isDone ? <s>{event.name}</s> : event.name}
+
+          {event.notes && <span className="material-symbols-outlined" style={{verticalAlign: "middle"}}>sticky_note_2</span>}
+        </span>
       </button>
     </>
   );
