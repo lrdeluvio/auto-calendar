@@ -31,14 +31,21 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
     }
   };
 
+  const isDue =
+    Temporal.PlainDate.compare(Temporal.PlainDate.from(event.start), Temporal.PlainDate.from(event.dueDate)) === 0;
+  // An entry is considered almost due if it is sorted 33.33% near its dueDate.
+  const isAlmostDue = Temporal.PlainDate.from(event.dueDate).subtract({
+    days: Math.round(
+      Temporal.PlainDate.from(event.dueDate).since(Temporal.PlainDate.from(event.startDate), { largestUnit: "days" })
+        .days / 3,
+    ),
+  });
+
   return (
     <>
       <button
         style={{ backgroundColor: event.color, width: "100%", height: "100%" }}
-        onClick={() => {
-          console.log("clicked")
-          NiceModal.show(EditEntryModal, { entry: event });
-        }}
+        onClick={() => NiceModal.show(EditEntryModal, { entry: event })}
       >
         {event.type === "task" && (
           <input
@@ -49,12 +56,23 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
             // what's the difference between onClick and onChange?
             onClick={(e) => e.stopPropagation()}
             onChange={handleToggle}
+            style={
+              !event.isDone && isDue
+                ? { outline: "2px solid red" }
+                : !event.isDone && Temporal.PlainDate.compare(Temporal.PlainDate.from(event.start), isAlmostDue) >= 0
+                  ? { outline: "2px dotted orange" }
+                  : {}
+            }
           />
         )}
         <span>
           {event.isDone ? <s>{event.name}</s> : event.name}
 
-          {event.notes && <span className="material-symbols-outlined" style={{verticalAlign: "middle"}}>sticky_note_2</span>}
+          {event.notes && (
+            <span className="material-symbols-outlined" style={{ verticalAlign: "middle" }}>
+              sticky_note_2
+            </span>
+          )}
         </span>
       </button>
     </>
