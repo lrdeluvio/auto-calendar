@@ -7,19 +7,14 @@ import { getWeekBounds } from "./getWeekBounds";
 import type { CalendarTaskUnscheduled } from "../types/models/CalendarEntry";
 
 export const sortTasks = async () => {
-  const { startOfWeek, endOfWeek } = getWeekBounds(undefined, 2);
-  // its because of this!!! we need to make startOfWeek and endOfWeek
-  // anchored to the current day!! maybe startOfWeek will always be the current day
-  // while endOfweek will be 7 days from startOfWeek
+  const week = getWeekBounds(Temporal.Now.plainDateISO(), 2);
 
-  // wait no, they ARE being calculated, just not showing up in the calendar
   const toSort = await db.events
     .filter(
       (e) =>
         e.isSortable &&
         !e.isDone &&
-        e.startDate >= startOfWeek.toString() &&
-        e.dueDate <= endOfWeek.toString(),
+        e.dueDate <= week.endOfWeek.toString(),
     )
     .toArray()
     .then((arr) => bulkFromEntryDbModel(arr))
@@ -59,7 +54,7 @@ export const sortTasks = async () => {
   */
   const ag = agenda(
     Temporal.Now.plainDateISO(),
-    endOfWeek.toPlainDate(),
+    week.endOfWeek.toPlainDate(),
     toSort,
     busyEvents,
     slots,
