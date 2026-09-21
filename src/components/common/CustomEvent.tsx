@@ -32,7 +32,7 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
   };
 
   const isDue =
-    Temporal.PlainDate.compare(Temporal.PlainDate.from(event.start), Temporal.PlainDate.from(event.dueDate)) === 0;
+    event.isSorted ?? Temporal.PlainDate.compare(Temporal.PlainDate.from(event.start), Temporal.PlainDate.from(event.dueDate)) === 0;
   // An entry is considered almost due if it is sorted 33.33% near its dueDate.
   const isAlmostDue = Temporal.PlainDate.from(event.dueDate).subtract({
     days: Math.round(
@@ -59,7 +59,7 @@ export const CustomEvent = ({ event }: { event: EntryDbModel }) => {
             style={
               !event.isDone && isDue
                 ? { outline: "2px solid red" }
-                : !event.isDone && Temporal.PlainDate.compare(Temporal.PlainDate.from(event.start), isAlmostDue) >= 0
+                : event.isSorted ?? (!event.isDone && Temporal.PlainDate.compare(Temporal.PlainDate.from(event.start), isAlmostDue) >= 0)
                   ? { outline: "2px dotted orange" }
                   : {}
             }
