@@ -14,10 +14,10 @@
         setting start and end
 - [x] when completing a task early, they should be moved to the curren time
   - (with end being the current time)
-- [ ] allow the dialogs to be closable when clicking outside the dialog
+- [x] allow the dialogs to be closable when clicking outside the dialog
 - [x] allow items to de deletable
 - [x] implement the update event forms function
-- [ ] find out how repeating calendar items would work.
+- [x] find out how repeating calendar items would work.
   - maybe we give items a recuranceId that is shared for the repeating items.
   - then an order so we know which comes first (for when we need to edit them, so only)
     upcoming items are updated not the previous items. though I guess we can just rely on
@@ -81,7 +81,7 @@ actually getting received by the algorithm (in agenda and sortTask)
   sorting algo might have something to do with it.
 - [x] custom event colors
 - [x] make calendar item duplicatable
-- [ ] BUG: old entries (not from the current week, are not being shown.)
+- [x] BUG: old entries (not from the current week, are not being shown.)
   possible fix: on the Calendar component, I should add all the previous events from the db
 - [ ] BUG: if a task is sorted near the currentTime, and it is after a busy event, if we
   give it a bufferAfter, it will ignore the busy event in terms of adding the buffer.
@@ -107,7 +107,7 @@ actually getting received by the algorithm (in agenda and sortTask)
   I have task A which is in morning slot with normal weight, then another with
   task B which is in all day with normal weight, but then if i change the weight of task B
   to high, it will then get rid of task B, making it unsorted.
-- [ ] reimplement the view unsorted tasks modal
+- [x] reimplement the view unsorted tasks modal
 - [ ] make the duration input maybe just numbers OR a combination of input number and input dropdown.
 - [ ] BUG: updating weight to low is not doing anything. updating to high or ASAP works fine though. I mean it DOES work, idk why I wrote this. Might have inadvertandly fixed it idk.
 - [ ] BUG: the cloning entries still has a few bugs
@@ -117,7 +117,8 @@ just use that
 
 - [ ] BUG: I think the can be started, specifically the time part is not working properly.
   THEORY: I think it is, but only one task at a time of the same start time???
-- [ ] BUG: So I have a whole bunch of tasks right? set on whole day, so they start at 6:00
+  yep, not working.
+- [x] BUG: So I have a whole bunch of tasks right? set on whole day, so they start at 6:00
   the I create a morning task, and it was assigned at 11AM even though the slots cutoff is 9AM
   - still happening.
   ohhhhhhhhhh i think its ebcause of the conflict resolver! since we used the start of slot a
@@ -130,6 +131,13 @@ just use that
   wait hmmmm idkk, maybe we can just oohhhh i know we can just duplicate scheduleTasksInSlot
   but modify it so that there is a check to see if slotA's task will make it past its og end.
   and then to avoid code duplication, we should make each part of scheduleTasksInSLot into functions!!!
+  - i got an idea!!!!
+  we sort both their tasks by their weight.
+  we then map throuh the sorted task,
+    if the currentTask is slotA, we use slotA's time and vice versa
+    then add it to an array of sorted entries that we pass as busyEvents.
+    then repeat.
+
 - [ ] in scheduleTaskInSlot:
   maybe this should't immediately stop the scheduuling?
   because what if there are still tasks that can fit on the remaining time?
@@ -139,7 +147,13 @@ just use that
   const tasksFitInDuration = remainingTasks.map((t) => t.duration <= durationLeftInSlot)
   schedule(tasksFitInDuration, currentTime, sortedTasks, [...overdueTasks, currentTask, !tasksFitInDuration])
   ````
-       
+- [x] in scheduleTaskInSlot on sortedTasksByWeight maybe we can use the duration
+  of their startDate and dueDate as a tie breaker?
+  like if b.weight === a.weight we can check the duraiton of their start and due date
+  example are 0 day 1 day 2 day etc. and those with lower days will win (aka will be prioritized)
+- [ ] I should still add another tie breaker inside the weigh equality based on creation date
+  to handle those with the same values!
+- [x] entries on calendar should have an indicator if there are texts in the notes section.
 
 -----
 # FEAURE IDEA
@@ -154,6 +168,30 @@ Easy tasks first
 Alternating between stressful and easy tasks
 
 ------
+On the recurring entries, I can use this libary: https://github.com/ggaabe/rrule-temporal/
+I can then create a separate dexie store for storing recurring entry rules.
+The entries themselves will still live in the entries store but they will have a recurranceId.
+when updating the events, a function will trigger that will create new entries based on the trackers in the recurrance store. 
+When you update an entry which is from a recurrance, the current and following recurring entries will
+be updated, not the previous ones.
 
 
-
+- [x] create an identifer for almost due tasks, maybe by changing the color of the checkbox?
+  - yellow for almost due and red for due now.
+- [ ] BUG: setting a can time on can be started on and due by is causing too many recurssion loops!
+  - probably because the way we handle tasks that can't be sorted yet! 
+  say the time is 9:00 but there are two tasks that can only be sorted in 10:00 BACK TO BACK,
+  it will then create an infinite loop because once again of how we handle them.
+  - Maybe we should add a tracker of sort idkk.
+  - I think the main problem here is the can be started on, due by works fine.
+- [x] BUG: tasks that are due next week are not just being sorted!
+  - [x] BUG: tasks where their due date are so far behind wont get sorted ( i think only applies where their due is next week)
+- [x] BUG: opening the unsorted task modal crashes the app.
+    Uncaught RangeError: can't parse empty string as date-time
+      CustomEvent CustomEvent.tsx:35
+      React 10
+      performWorkUntilDeadline scheduler.development.js:45
+    CustomEvent.tsx:35:51
+    - [ ] BUG: The fix inadvertadly created a new bug on the isDue and isAlmostDue, it is always resulting in isDue being the default.
+- [ ] make tasks completeable in the unsorted task pain 
+- [ ] prioritize custom duration!!!!
