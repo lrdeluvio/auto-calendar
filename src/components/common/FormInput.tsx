@@ -5,13 +5,14 @@ type FormInputProps = {
   id?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
+export const FormInput = ({ label, id, ...props }: FormInputProps) => {
+  const randomId = useId();
+  const inputId = id ?? randomId;
 
-export const FormInput = ({ label, id = useId(), ...props }: FormInputProps) => {
   return (
     <>
-      <label htmlFor={id}>{label}</label>
-      <input id={id} {...props} />
+      <label htmlFor={inputId}>{label}</label>
+      <input id={inputId} {...props} />
     </>
   );
 };
-

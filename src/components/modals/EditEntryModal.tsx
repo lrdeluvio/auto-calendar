@@ -9,25 +9,24 @@ import { CreateEntryModal } from "./CreateEntryModal";
 
 export const EditEntryModal = NiceModal.create(({ entry }: { entry: EntryDbModel }) => {
   const modal = useModal();
+  const handleDuplicate = () => {
+    modal.remove();
+    NiceModal.show(CreateEntryModal, { entry: entry });
+  }
+
   return (
     <Modal>
       <EntryForm
         mode="edit"
         data={entry}
-        updateFormAction={(formData, entry) => updateTaskFromForm(formData, entry.id)}
+        action={(formData, entry) => updateTaskFromForm(formData, entry.id)}
         onOk={() => modal.remove()}
       >
         <EntryFormFields isViewOnly={false} itemType={entry.type} data={entry} />
       </EntryForm>
-      <button onClick={() => modal.hide()}>Close</button>{" "}
-      <button
-        onClick={() => {
-          modal.remove();
-          NiceModal.show(CreateEntryModal, { entry: entry });
-        }}
-      >
-        Duplicate
-      </button>
+
+      <button onClick={() => modal.hide()}>Close</button>
+      <button onClick={() => handleDuplicate()}>Duplicate</button>
       <DeleteEntryButton entryId={entry.id} onOk={() => modal.remove()} />
     </Modal>
   );

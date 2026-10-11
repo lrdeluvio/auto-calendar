@@ -4,32 +4,36 @@ import type { Result } from "../../types/common";
 
 type EntryFormProps = {
   onOk?: () => void;
-  onError?: (e: any) => void;
+  onError?: (e: unknown) => void;
   children: ReactNode;
 } & (
   | {
       mode: "create";
-      createFormAction: (formData: FormData) => Promise<Result<string, string>>;
+      action: (formData: FormData) => Promise<Result<string, string>>;
     }
   | {
       mode: "edit";
       data: EntryDbModel;
-      updateFormAction: (formData: FormData, entry: EntryDbModel) => Promise<Result<string, string>>;
+      action: (formData: FormData, entry: EntryDbModel) => Promise<Result<string, string>>;
     }
 );
 
 export const EntryForm = (props: EntryFormProps) => {
-  const { mode, onOk, onError, children } = props;
+  const { mode, onOk, onError, children, action } = props;
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
     const formData = new FormData(e.currentTarget);
     const result =
-      mode === "create" ? await props.createFormAction(formData) : await props.updateFormAction(formData, props.data);
+      mode === "create"
+        ? await action(formData)
+        : await action(formData, props.data);
 
     if (!result.ok) {
-      onError && onError(result.error);
+      onError?.(result.error);
       return;
-    } else onOk && onOk();
+    }
+     onOk?.();
   };
 
   return (

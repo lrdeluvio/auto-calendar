@@ -17,13 +17,16 @@ export const FormSelect = ({
   name,
   defaultSelected,
   options,
-  id = useId(),
+  id,
   ...selectProps
 }: FormSelectProps) => {
+  const randomId = useId();
+  const inputId = id ?? randomId;
+  
   return (
     <>
-      <label htmlFor={id}>{label}</label>
-      <select name={name} id={id} {...selectProps}>
+      <label htmlFor={inputId}>{label}</label>
+      <select name={name} id={inputId} {...selectProps}>
         {options.map((opt) => (
           <option value={opt.value} key={opt.id ?? opt.value} selected={defaultSelected === opt.value}>
             {opt.label}

@@ -32,22 +32,18 @@ export const CreateEntryModal = NiceModal.create(({ entry }: { entry?: EntryDbMo
         id="item-type-task"
         value={"task"}
         checked={itemType === "task"}
-        onChange={(e) => setItemType(e.target.value as "event" | "task")}
+        onChange={(e) => setItemType(e.target.value as CalendarEntryType)}
         required
       />
 
       <EntryForm
         mode="create"
-        createFormAction={(formData) =>
+        action={(formData) =>
           itemType === "task" ? createTaskFromForm(formData) : createEventFromForm(formData)
         }
         onOk={() => modal.remove()}
       >
-        {entry ? (
-          <EntryFormFields isViewOnly={false} itemType={itemType === "task" ? "task" : "event"} data={entry} />
-        ) : (
-          <EntryFormFields isViewOnly={false} itemType={itemType === "task" ? "task" : "event"} />
-        )}
+        <EntryFormFields isViewOnly={false} itemType={itemType === "task" ? "task" : "event"} {...(entry ? { data: entry } : {})} />
       </EntryForm>
 
       <button onClick={() => modal.hide()}>Close</button>
