@@ -43,7 +43,7 @@ export const CreateEntryModal = NiceModal.create(({ entry }: { entry?: EntryDbMo
         }
         onOk={() => modal.remove()}
       >
-        <EntryFormFields isViewOnly={false} itemType={itemType === "task" ? "task" : "event"} {...(entry ? { data: entry } : {})} />
+        <EntryFormFields itemType={itemType === "task" ? "task" : "event"} {...(entry ? { data: entry } : {})} />
       </EntryForm>
 
       <button onClick={() => modal.hide()}>Close</button>

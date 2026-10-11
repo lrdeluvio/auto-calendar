@@ -32,7 +32,6 @@ const weightOptions = [
 interface EntryFormFieldsProps {
   itemType: CalendarEntryType;
   data?: EntryDbModel;
-  isViewOnly: boolean;
 }
 
 const BufferFields = ({
@@ -106,13 +105,11 @@ const EventFields = ({
 
 const TaskFields = ({
   data,
-  isViewOnly,
   dateNow,
   dateTimeNow,
   common,
 }: {
   data: EntryDbModel | undefined;
-  isViewOnly: boolean;
   dateNow: Temporal.PlainDate;
   dateTimeNow: Temporal.PlainDateTime;
   common: any;
@@ -129,9 +126,8 @@ const TaskFields = ({
         name="isBusy"
         checked={autoSortForm ? true : isBusy}
         onChange={(e) => setIsBusy(autoSortForm ? true : e.target.checked)}
-        disabled={isViewOnly}
       />
-      <input type="hidden" name="isSortable" disabled={isViewOnly} value="false" />
+      <input type="hidden" name="isSortable" value="false" />
       <FormInput
         label="Auto Sort?"
         type="checkbox"
@@ -139,7 +135,6 @@ const TaskFields = ({
         checked={autoSortForm}
         value="true"
         onChange={(e) => setAutoSortForm(e.target.checked)}
-        disabled={isViewOnly}
       />
       {!autoSortForm ? (
         <>
@@ -227,17 +222,17 @@ const fromISODuration = (duration: string) => {
   return Temporal.Duration.from(x.data.duration).minutes;
 };
 
-export const EntryFormFields = ({ itemType, data, isViewOnly }: EntryFormFieldsProps) => {
+export const EntryFormFields = ({ itemType, data }: EntryFormFieldsProps) => {
   const dateNow = Temporal.Now.plainDateISO();
   const dateTimeNow = Temporal.Now.plainDateTimeISO().round("minute");
-  const common = { required: true, disabled: isViewOnly };
+  const common = { required: true };
   
   return (
     <>
       <FormInput label="Name" type="text" name="name" defaultValue={data?.name} {...common} />
 
       {itemType === "task" ? (
-        <TaskFields data={data} isViewOnly={false} dateNow={dateNow} dateTimeNow={dateTimeNow} common={common} />
+        <TaskFields data={data} dateNow={dateNow} dateTimeNow={dateTimeNow} common={common} />
       ) : (
         <EventFields data={data} dateTimeNow={dateTimeNow} common={common} />
       )}
